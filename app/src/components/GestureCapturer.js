@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { GestureRecognizer, FilesetResolver } from '@mediapipe/tasks-vision';
 
-function TestComponent() {
+function GestureCapturer(props) {
   const [introOneDisplay, setIntroOneDisplay] = useState('flex');
   const [introTwoDisplay, setIntroTwoDisplay] = useState('none');
   const [introThreeDisplay, setIntroThreeDisplay] = useState('none');
@@ -16,20 +16,7 @@ function TestComponent() {
   let categoryName = '';
   let results;
 
-  // Set up our custom gesture events
-  function subscribe(eventName, listener) {
-    document.addEventListener(eventName, listener);
-  }
   
-  function unsubscribe(eventName, listener) {
-    document.removeEventListener(eventName, listener);
-  }
-  
-  function publish(eventName, data) {
-    const event = new CustomEvent(eventName, { data: data });
-    console.log('publishing event', eventName, data);
-    document.dispatchEvent(event);
-  }
   
   useEffect(() => {
     const video = videoRef.current;
@@ -96,7 +83,7 @@ function TestComponent() {
           for (let i = 0; i < results.landmarks.length; i++) {
             if (categoryName != results.gestures[i][0].categoryName && results.gestures[i][0].categoryName != 'None') {
               categoryName = results.gestures[i][0].categoryName;
-              publish(categoryName, {});
+              props.publish(categoryName, {});
             };
            }
         } 
@@ -155,7 +142,7 @@ function TestComponent() {
   );
 }
 
-export default TestComponent;
+export default GestureCapturer;
 
 
 
