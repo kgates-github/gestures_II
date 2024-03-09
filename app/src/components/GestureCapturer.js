@@ -5,7 +5,6 @@ function GestureCapturer(props) {
   const [introOneDisplay, setIntroOneDisplay] = useState('flex');
   const [introTwoDisplay, setIntroTwoDisplay] = useState('none');
   const [introThreeDisplay, setIntroThreeDisplay] = useState('none');
-  const [introFourDisplay, setIntroFourDisplay] = useState('none');
   const [webcamRunning, setWebcamRunning] = useState(false);
   let gestureRecognizer;
   const videoRef = useRef(null);
@@ -13,10 +12,11 @@ function GestureCapturer(props) {
   const enableWebcamButtonRef = useRef(null);
   const runningMode = "worker";
   let lastVideoTime = null;
-  let categoryName = '';
   let results;
+  let gestureName = '';
+  let lastGesture = null;
+  let handedness = '';
 
-  
   
   useEffect(() => {
     const video = videoRef.current;
@@ -52,21 +52,23 @@ function GestureCapturer(props) {
         setIntroThreeDisplay('flex');
         
         // getUsermedia parameters.
-        const constraints = {
-          video: true
-        };
+        const constraints = { video: true };
+
         // Activate the webcam stream.
-        navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
+        navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
           video.srcObject = stream;
-          video.addEventListener("loadeddata", predictWebcam);
+          video.addEventListener("loadeddata", initPredictWebcam);
         });
       }
-      async function predictWebcam() {
-        const webcamElement = document.getElementById("webcam");
+
+      const initPredictWebcam = () => {
         setWebcamRunning(true);
         setIntroThreeDisplay('none');
-        setIntroFourDisplay('flex');
-        
+        predictWebcam()
+        props.setIsLoaded(true);
+      }
+
+      async function predictWebcam() {
         // Start detecting the stream.
         if (runningMode === "IMAGE") {
           runningMode = "VIDEO";
@@ -80,20 +82,33 @@ function GestureCapturer(props) {
         }
 
         if (results.gestures.length > 0) {
-          for (let i = 0; i < results.landmarks.length; i++) {
-            if (categoryName != results.gestures[i][0].categoryName && results.gestures[i][0].categoryName != 'None') {
-              categoryName = results.gestures[i][0].categoryName;
-              props.publish(categoryName, {});
-            };
-           }
-        } 
+          if (lastGesture != results.gestures[0][0].categoryName && results.gestures[0][0].categoryName != 'None') {
+            gestureName = results.gestures[0][0].categoryName;
+            handedness = results.handedness[0][0].categoryName;
+            props.publish(
+              gestureName, 
+              { 
+                handedness: handedness,
+                x: results.landmarks[0][0].x,
+                y: results.landmarks[0][0].y,
+                z: results.landmarks[0][0].z
+              }
+            );
+            lastGesture = gestureName;
+          } else if (lastGesture == results.gestures[0][0].categoryName && lastGesture != "No_Gesture") {
+            // If the same gesture is detected, publish x, y, z coordinates
+            //props.publish("Gesture_X", {x: results.landmarks[0][0].x});
+          }
+        } else if (lastGesture != "No_Gesture") {
+          // In "no_gesture" mode. Wait until we get other gesture to reset
+          props.publish("No_Gesture", {});
+          lastGesture = "No_Gesture";
+        }
         
         // Call this function again to keep predicting when the browser is ready.
         if (true) {
           window.requestAnimationFrame(predictWebcam);
         }
-        
-        
       }
     };
     createGestureRecognizer();
@@ -120,17 +135,7 @@ function GestureCapturer(props) {
          Staring camera...
         </div>
       </div>
-      <div className="outerContainer" style={{ display: introFourDisplay, position: "absolute", zIndex:10 }}>
-        <div id="innerContainer">
-          <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
-            
-            <img src={process.env.PUBLIC_URL + '/svg/icon_palm_open.svg'} 
-              alt="open hand" 
-              style={{width:'60px', height:'60px'}}
-              />to open a dialog...
-          </div>
-        </div>
-      </div>
+      
 
       <div style={{ position: "absolute", zIndex:10 }}>
         <video ref={videoRef}
@@ -143,6 +148,4 @@ function GestureCapturer(props) {
 }
 
 export default GestureCapturer;
-
-
 

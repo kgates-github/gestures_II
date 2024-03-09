@@ -1,9 +1,12 @@
 
 import './App.css';
 import GestureCapturer from './components/GestureCapturer';
+import Main from './components/Main';
+import React, { useState } from 'react';
 
 
 function App() {
+  const [isLoaded, setIsLoaded] = useState(false);
 
   // Set up our custom gesture events
   const subscribe = (eventName, listener) => {
@@ -15,14 +18,14 @@ function App() {
   }
   
   const publish = (eventName, data) => {
-    const event = new CustomEvent(eventName, { data: data });
-    console.log('publishing event', eventName, data);
+    const event = new CustomEvent(eventName, { detail: data });
+    //console.log('publishing event', eventName, data);
     document.dispatchEvent(event);
   }
   
   return (
     <div className="App">
-      <GestureCapturer publish={publish}/>
+      <GestureCapturer publish={publish} setIsLoaded={setIsLoaded} />
       <div className="header">
         <div style={{flex:1}}></div>
         <div className="title">
@@ -30,6 +33,8 @@ function App() {
         </div>
         <div style={{flex:1}}></div>
       </div>
+      {isLoaded ? <Main subscribe={subscribe} unsubscribe={unsubscribe} /> : null}
+
     </div>
   );
 }
