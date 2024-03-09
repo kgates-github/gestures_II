@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { GestureRecognizer, FilesetResolver } from '@mediapipe/tasks-vision';
+import { frame } from 'framer-motion';
 
 function GestureCapturer(props) {
   const [introOneDisplay, setIntroOneDisplay] = useState('flex');
@@ -16,13 +17,14 @@ function GestureCapturer(props) {
   let gestureName = '';
   let lastGesture = null;
   let handedness = '';
+  let frameCount = 0;
 
   
   useEffect(() => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
     const enableWebcamButton = enableWebcamButtonRef.current;
-
+    
     const createGestureRecognizer = async () => {
       const vision = await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/wasm");
       gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
@@ -75,6 +77,8 @@ function GestureCapturer(props) {
           await gestureRecognizer.setOptions({ runningMode: "VIDEO", numHands: 1 });
         }
 
+        frameCount++;
+
         let nowInMs = Date.now();
         if (video.currentTime !== lastVideoTime) {
           lastVideoTime = video.currentTime;
@@ -95,9 +99,13 @@ function GestureCapturer(props) {
               }
             );
             lastGesture = gestureName;
-          } else if (lastGesture == results.gestures[0][0].categoryName && lastGesture != "No_Gesture") {
-            // If the same gesture is detected, publish x, y, z coordinates
-            //props.publish("Gesture_X", {x: results.landmarks[0][0].x});
+          } else if (frameCount % 30 === 0 && 
+            lastGesture == results.gestures[0][0].categoryName && 
+            lastGesture != "No_Gesture") {
+            // If the same gesture is detected, publish x, y, z coordinates every 300 frames
+              props.publish("Gesture_X", {x: results.landmarks[0][0].x});
+              props.publish("Gesture_Y", {y: results.landmarks[0][0].y});
+              props.publish("Gesture_Z", {z: results.landmarks[0][0].z});
           }
         } else if (lastGesture != "No_Gesture") {
           // In "no_gesture" mode. Wait until we get other gesture to reset
@@ -125,7 +133,7 @@ function GestureCapturer(props) {
         <div id="innerContainer">
           <div className="annotations">This prototype uses your webcam to recognize hand gestures.</div>
           <div ref={enableWebcamButtonRef}  id="webcamButton">
-            <span className="mdc-button__label">Enable Webcam</span>
+            <span className="">Enable Webcam</span>
           </div> 
           <div style={{height:"100px"}}></div>
         </div>

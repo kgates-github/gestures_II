@@ -3,26 +3,38 @@ import { motion } from "framer-motion"
 
 
 function Main(props) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [state, setState] = useState('closed');
   const variants = {
-    open: { opacity: 1, scale: 1 },
+    open: { opacity: 1, scale: 1, x: "0%" },
     closed: { opacity: 0, scale: 0.5 },
+    left: { opacity: 1, scale: 1, x: "-50%" },
+    right: { opacity: 1, scale: 1, x: "50%" },
   }
   
   useEffect(() => {
+    let start_x = 0;
+    let offset_x = 0;
     props.subscribe("Open_Palm", (e) => {
       console.log('Open_Palm captured ' + e.detail.handedness)
-      setIsOpen(true)
+      start_x = e.detail.x;
+      setState('open')
     });
-    props.subscribe("Closed_Fist", (e) => {
-      console.log('Closed_Fist captured')
+    props.subscribe("Gesture_X", (e) => {
+      offset_x = Math.round(100 * (start_x - e.detail.x))
       
+      if (offset_x >= 4) { 
+        setState('right')
+      } else if (offset_x <= -4) {
+        setState('left')
+       } else { 
+        setState('open')
+       }
     });
-    props.subscribe("No_Gesture", () => setIsOpen(false));
+    props.subscribe("No_Gesture", () => setState('closed'));
     
     return () => {
       props.unsubscribe("Open_Palm", () => console.log('Open_Palm unsubscribed'));
-      props.unsubscribe("Closed_Fist", () => console.log('Closed_Fist unsubscribed'));
+      props.unsubscribe("Gesture_X", () => console.log('Gesture_X unsubscribed'));
     }
   }, []);
 
@@ -37,7 +49,7 @@ function Main(props) {
             
             <motion.div
               className="dialog-box-01"
-              animate={isOpen ? "open" : "closed"}
+              animate={state}
               variants={variants}
             >
               <h4>Capybaras</h4>
@@ -79,4 +91,9 @@ export const MyComponent = () => {
 
 
   Capybaras, the largest rodents in the world, are fascinating creatures native to South America. These semi-aquatic mammals are often found lounging in or near water bodies, as they are excellent swimmers and spend a significant portion of their time submerged. Capybaras are highly social animals, living in groups of up to 100 individuals, and they communicate through a variety of vocalizations and body language. They have a herbivorous diet, feeding mainly on grasses and aquatic plants, and their teeth continuously grow throughout their lives to accommodate their chewing habits. Despite their size, capybaras are surprisingly agile and can run as fast as 35 kilometers per hour when necessary, making them capable of escaping predators like jaguars and anacondas. Their gentle demeanor has also made them popular in zoos and as exotic pets in some regions, although they require specialized care due to their unique habitat and social needs. Overall, capybaras stand out as remarkable and endearing animals with a range of intriguing characteristics.
+
+
+  <p>Capybaras are highly social animals, living in groups of up to 100 individuals, and they communicate through a variety of vocalizations and body language. They have a herbivorous diet, feeding mainly on grasses and aquatic plants, and their teeth continuously grow throughout their lives to accommodate their chewing habits.</p>
+    
+  <p>Despite their size, capybaras are surprisingly agile and can run as fast as 35 kilometers per hour when necessary, making them capable of escaping predators like jaguars and anacondas. Their gentle demeanor has also made them popular in zoos and as exotic pets in some regions, although they require specialized care due to their unique habitat and social needs. Overall, capybaras stand out as remarkable and endearing animals with a range of intriguing characteristics.</p>
 */
