@@ -1,4 +1,6 @@
-.outer-container {
+
+
+.outerContainer {
   position:absolute; 
   top:0px; 
   left:0px; 
@@ -8,6 +10,8 @@
   background:none;
   display: flex; 
   justify-content: center;
+  font-family: "Roboto Mono", sans-serif;
+  font-size:12px;
 }
 
 #webcamButton {
@@ -29,7 +33,7 @@
   background-color: #333;
 }
 
-#webcamButtonContainer {
+#innerContainer {
   display:flex; 
   background:none; 
   flex-direction: column;
