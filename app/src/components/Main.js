@@ -5,10 +5,10 @@ import { motion } from "framer-motion"
 function Main(props) {
   const [state, setState] = useState('closed');
   const variants = {
-    open:    { opacity: 1, scale: 1, x: "0%" },
-    closed:  { opacity: 0, scale: 0.5 },
-    left:    { opacity: 1, scale: 1, x: "-33%" },
-    right:   { opacity: 1, scale: 1, x: "33%" },
+    open:    { opacity: 1, scale: 1,   x: "0%", y: 0 },
+    closed:  { opacity: 0, scale: 0.5, y: -50 },
+    left:    { opacity: 1, scale: 1,   x: "-33%", y: 0 },
+    right:   { opacity: 1, scale: 1,   x: "33%",  y: 0 },
   }
   
   useEffect(() => {
@@ -53,6 +53,7 @@ function Main(props) {
               className="dialog"
               animate={state}
               variants={variants}
+              initial={{ opacity: 0, scale: 0.5, y: -50 }}
               style={{display: 'flex', flexDirection: 'row', alignItems: 'center', }}
             >
               <div className="dialog-card">
