@@ -131,18 +131,25 @@
   font-weight:500;
 }
 
+.dialog {
+  opacity: 0;
+}
 
-.dialog-box-01 {
-  width: 600px;
+.dialog-card {
+  width: 300px;
   height: 300px;
   font-family: 'Source Sans Pro', sans-serif;
   line-height: 1.6em;
   font-size: 20px;
-  background: #e0f5ff;
+  background: #fff;
   border: 3px solid #4b6e97;
   border-radius: 10px;
   padding: 20px;
-  opacity: 0;
   box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.4);
   overflow-y: hidden;
+  margin-right: 20px;
+}
+
+.dialog-card:last-child {
+  margin-right: 0px;
 }

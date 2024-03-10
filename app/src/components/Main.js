@@ -5,31 +5,34 @@ import { motion } from "framer-motion"
 function Main(props) {
   const [state, setState] = useState('closed');
   const variants = {
-    open: { opacity: 1, scale: 1, x: "0%" },
-    closed: { opacity: 0, scale: 0.5 },
-    left: { opacity: 1, scale: 1, x: "-50%" },
-    right: { opacity: 1, scale: 1, x: "50%" },
+    open:    { opacity: 1, scale: 1, x: "0%" },
+    closed:  { opacity: 0, scale: 0.5 },
+    left:    { opacity: 1, scale: 1, x: "-33%" },
+    right:   { opacity: 1, scale: 1, x: "33%" },
   }
   
   useEffect(() => {
-    let start_x = 0;
+    let start_x  = 0;
     let offset_x = 0;
+
     props.subscribe("Open_Palm", (e) => {
       console.log('Open_Palm captured ' + e.detail.handedness)
       start_x = e.detail.x;
-      setState('open')
+      if (state != 'open') setState('open')
     });
+    
     props.subscribe("Gesture_X", (e) => {
       offset_x = Math.round(100 * (start_x - e.detail.x))
-      
-      if (offset_x >= 4) { 
-        setState('right')
-      } else if (offset_x <= -4) {
-        setState('left')
+      //console.log('offset_x', offset_x)
+      if (offset_x >= 5) { 
+        if (state != 'right') setState('right')
+      } else if (offset_x <= -5) {
+        if (state != 'left') setState('left')
        } else { 
-        setState('open')
+        if (state != 'open') setState('open')
        }
     });
+    
     props.subscribe("No_Gesture", () => setState('closed'));
     
     return () => {
@@ -46,14 +49,24 @@ function Main(props) {
       }}>
         <div id="innerContainer">
           <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
-            
             <motion.div
-              className="dialog-box-01"
+              className="dialog"
               animate={state}
               variants={variants}
+              style={{display: 'flex', flexDirection: 'row', alignItems: 'center', }}
             >
-              <h4>Capybaras</h4>
-              Capybaras, the largest rodents in the world, are fascinating creatures native to South America. These semi-aquatic mammals are often found lounging in or near water bodies, as they are excellent swimmers and spend a significant portion of their time submerged. 
+              <div className="dialog-card">
+                <h4>Blind Mole Rats</h4>
+                Blind mole rats are fascinating creatures are well adapted to living underground, where they construct extensive tunnel systems.
+              </div>
+              <div className="dialog-card">
+                <h4>Capybaras</h4>
+                Capybaras, the largest rodents in the world, are fascinating creatures native to South America.
+              </div>
+              <div className="dialog-card">
+                <h4>Capybaras</h4>
+                Capybaras, the largest rodents in the world, are fascinating creatures native to South America.
+              </div>
             </motion.div>
           </div>
           
