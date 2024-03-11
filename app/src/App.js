@@ -10,10 +10,12 @@ function App() {
 
   // Set up our custom gesture events
   const subscribe = (eventName, listener) => {
+    console.log('Subscribing to', eventName);
     document.addEventListener(eventName, listener);
   }
   
   const unsubscribe = (eventName, listener) => {
+    console.log('Unsubscribing from', eventName);
     document.removeEventListener(eventName, listener);
   }
   

@@ -71,7 +71,7 @@ function GestureCapturer(props) {
       }
 
       async function predictWebcam() {
-        // Start detecting the stream.
+       
         if (runningMode === "IMAGE") {
           runningMode = "VIDEO";
           await gestureRecognizer.setOptions({ runningMode: "VIDEO", numHands: 1 });
@@ -89,6 +89,7 @@ function GestureCapturer(props) {
           if (lastGesture != results.gestures[0][0].categoryName && results.gestures[0][0].categoryName != 'None') {
             gestureName = results.gestures[0][0].categoryName;
             handedness = results.handedness[0][0].categoryName;
+            console.log('Detected gesture: ' + gestureName + ' ' + handedness);
             props.publish(
               gestureName, 
               { 
@@ -102,10 +103,15 @@ function GestureCapturer(props) {
           } else if (frameCount % 30 === 0 && 
             lastGesture == results.gestures[0][0].categoryName && 
             lastGesture != "No_Gesture") {
-            // If the same gesture is detected, publish x, y, z coordinates every 300 frames
-              props.publish("Gesture_X", {x: results.landmarks[0][0].x});
-              props.publish("Gesture_Y", {y: results.landmarks[0][0].y});
-              props.publish("Gesture_Z", {z: results.landmarks[0][0].z});
+              // If the same gesture is detected, publish x, y, z coordinates every 300 frames
+              props.publish(
+                "Hand_Coords", 
+                {
+                  x: results.landmarks[0][0].x,
+                  y: results.landmarks[0][0].y,
+                  z: results.landmarks[0][0].z
+                }
+              );
           }
         } else if (lastGesture != "No_Gesture") {
           // In "no_gesture" mode. Wait until we get other gesture to reset
@@ -144,7 +150,6 @@ function GestureCapturer(props) {
         </div>
       </div>
       
-
       <div style={{ position: "absolute", zIndex:10 }}>
         <video ref={videoRef}
           style={{ position: "absolute", display: "none", left: "0px", top: "0px", width: "100%", height: "100%" }} autoPlay playsInline></video>

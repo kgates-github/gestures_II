@@ -1,43 +1,82 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from "framer-motion"
+import Card from './Card';
 
 
 function Main(props) {
   const [state, setState] = useState('closed');
-  const variants = {
-    open:    { opacity: 1, scale: 1,   x: "0%", y: 0 },
-    closed:  { opacity: 0, scale: 0.5, y: -50 },
+  const [isActive, setIsActive] = useState(false);
+  const variantsDialog = {
     left:    { opacity: 1, scale: 1,   x: "-33%", y: 0 },
+    center:  { opacity: 1, scale: 1,   x: "0%",   y: 0 },
     right:   { opacity: 1, scale: 1,   x: "33%",  y: 0 },
+    closed:  { opacity: 0, scale: 0.7, y: -20 },
   }
-  
+
+  const variantsCard = {
+    active:   { y: -50, opacity: 1, border: "12px solid #0098fd", scale: 1.02},
+    inactive: { y: 0, scale: 1, opacity: 0.8, border: "6px solid #999"},
+  }
+
+  // TODO: Clean up event listeners, animate checkmark
+  const closeDialog = () => {
+    //setState('closed');
+    //setIsActive(false);
+  }
+
   useEffect(() => {
+
+    const handleOpenPalm = (e) => {
+      if (state != 'center' && e.detail.handedness == 'Left') {
+        setState('center');
+        setIsActive(false);
+        // When user opens palm, unsubscribe to hand coords until they make a fist
+        props.unsubscribe("Hand_Coords", handleGestureX);
+        props.subscribe("Closed_Fist", handleClosedFist);
+      }
+    }
+
+    // Closed fist activates
+    const handleClosedFist = (e) => {
+      start_x = e.detail.x;
+      setIsActive(true);
+      props.subscribe("Hand_Coords", handleGestureX);
+    }
+
+    // Once activated, track X
+    const handleGestureX = (e) => {
+      offset_x = Math.round(100 * (start_x - e.detail.x))
+      if (offset_x >= 8) { 
+        if (state != 'right') {
+          setState('right')
+        }
+      } else if (offset_x <= -8) {
+        if (state != 'left') setState('left')
+      } else { 
+        if (state != 'center') setState('center')
+      }
+    }
+
+    const handleNoGesture =  (e) => {
+      // Revove event listeners that require an open dialog
+      props.unsubscribe("Hand_Coords", handleGestureX);
+      props.unsubscribe("Closed_Fist", handleClosedFist);
+      setState('closed')
+      setIsActive(false);
+    }
+
     let start_x  = 0;
     let offset_x = 0;
 
-    props.subscribe("Open_Palm", (e) => {
-      console.log('Open_Palm captured ' + e.detail.handedness)
-      start_x = e.detail.x;
-      if (state != 'open') setState('open')
-    });
-    
-    props.subscribe("Gesture_X", (e) => {
-      offset_x = Math.round(100 * (start_x - e.detail.x))
-      //console.log('offset_x', offset_x)
-      if (offset_x >= 5) { 
-        if (state != 'right') setState('right')
-      } else if (offset_x <= -5) {
-        if (state != 'left') setState('left')
-       } else { 
-        if (state != 'open') setState('open')
-       }
-    });
-    
-    props.subscribe("No_Gesture", () => setState('closed'));
+    // Open_Palm opens dialog, no gesture closes dialog 
+    props.subscribe("Open_Palm", handleOpenPalm);
+    props.subscribe("No_Gesture", handleNoGesture);
     
     return () => {
-      props.unsubscribe("Open_Palm", () => console.log('Open_Palm unsubscribed'));
-      props.unsubscribe("Gesture_X", () => console.log('Gesture_X unsubscribed'));
+      props.unsubscribe("Open_Palm", handleOpenPalm);
+      props.unsubscribe("Closed_Fist", handleClosedFist);
+      props.unsubscribe("No_Gesture", () => console.log('No_Gesture unsubscribed'));
+      props.unsubscribe("Hand_Coords", handleGestureX);
     }
   }, []);
 
@@ -49,25 +88,42 @@ function Main(props) {
       }}>
         <div id="innerContainer">
           <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+            
             <motion.div
               className="dialog"
               animate={state}
-              variants={variants}
-              initial={{ opacity: 0, scale: 0.5, y: -50 }}
+              variants={variantsDialog}
+              initial={{ opacity: 0, scale: 0.8, y: -20 }}
+              transition={{ duration: 0.4, ease: 'easeOut' }} 
               style={{display: 'flex', flexDirection: 'row', alignItems: 'center', }}
             >
-              <div className="dialog-card">
-                <h4>Blind Mole Rats</h4>
-                Blind mole rats are fascinating creatures are well adapted to living underground, where they construct extensive tunnel systems.
-              </div>
-              <div className="dialog-card">
-                <h4>Capybaras</h4>
-                Capybaras, the largest rodents in the world, are fascinating creatures native to South America.
-              </div>
-              <div className="dialog-card">
-                <h4>Capybaras</h4>
-                Capybaras, the largest rodents in the world, are fascinating creatures native to South America.
-              </div>
+              <Card 
+                state={state} 
+                closeDialog={closeDialog}
+                isActive={isActive && state == 'right'} 
+                title={"Blind Mole Rat"}
+                text={"Blind mole rats are born nearly blind, but are well adapted to living underground, where they construct extensive tunnel systems."}
+                subscribe={props.subscribe} 
+                unsubscribe={props.unsubscribe} 
+              />
+              <Card 
+                state={state} 
+                closeDialog={closeDialog}
+                isActive={isActive && state == 'center'}
+                title={"Capybara"}
+                text={"Capybaras are large, semi-aquatic rodents native to South America."}
+                subscribe={props.subscribe} 
+                unsubscribe={props.unsubscribe} 
+              />
+              <Card 
+                state={state} 
+                closeDialog={closeDialog}
+                isActive={isActive && state == 'left'}
+                title={"Treeshrew"}
+                text={" Treeshrews are small mammals native to the tropical forests of South and Southeast Asia."}
+                subscribe={props.subscribe} 
+                unsubscribe={props.unsubscribe} 
+              />
             </motion.div>
           </div>
           
