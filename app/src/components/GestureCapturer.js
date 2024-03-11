@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useContext } from 'react';
 import { GestureRecognizer, FilesetResolver } from '@mediapipe/tasks-vision';
-import { frame } from 'framer-motion';
+import { LogContext } from './LogContext';
 
 function GestureCapturer(props) {
+  const log = useContext(LogContext);
   const [introOneDisplay, setIntroOneDisplay] = useState('flex');
   const [introTwoDisplay, setIntroTwoDisplay] = useState('none');
   const [introThreeDisplay, setIntroThreeDisplay] = useState('none');

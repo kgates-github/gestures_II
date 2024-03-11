@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { motion } from "framer-motion"
+import { LogContext } from './LogContext';
 
 
 function Card(props) {
-  const [isSelected, setIsSelected] = useState(false);
+  const log = useContext(LogContext);
   const variantsCard = {
     active:    { y: -50, opacity: 1, border: "12px solid #0098fd", scale: 1.02},
     inactive:  { y: 0, scale: 1, opacity: 0.8, border: "6px solid #999"},
@@ -11,37 +12,20 @@ function Card(props) {
     hideThumb: { opacity: 0, y: 0},
     highlightThumb: { border: "8px solid #00cc66", opacity: 1, y: -24},
   }
-  const getAnimation = (isSelected) => {
-    if (props.isActive) {
-      if (isSelected) return 'highlightThumb';
-      return 'showThumb';
-    } else {
-      return 'hideThumb';
-    }
+  const getAnimation = () => {
+    if (props.isSelected && props.isActive) return 'highlightThumb';
+    else if (props.isActive) return 'showThumb';
+    else return 'hideThumb'
   }
   
   useEffect(() => {
-    setIsSelected(false);
-
-    const handleThumbsUp = (e) => {
-      setIsSelected(true);
-      props.closeDialog();
-    }
-    if (props.isActive) {
-      props.subscribe("Thumb_Up", handleThumbsUp);
-    } else {
-      props.unsubscribe("Thumb_Up", handleThumbsUp);
-    }
-    return () => {
-      props.unsubscribe("Thumb_Up", handleThumbsUp);
-    }
-
-  }, [props.isActive]);
+    log('==============================\nCard isActive:'    + props.isActive);
+  }, []);
 
   return (
     <div style={{display:"flex", flexDirection: "column", alignItems:"center"}}>
       <motion.div className="dialog-card"
-        animate={ (props.isActive) ? 'active' : 'inactive'}
+        animate={(props.isActive) ? 'active' : 'inactive'}
         variants={variantsCard}
         transition={{ duration: 0.3, ease: 'easeOut' }} 
       >
@@ -49,7 +33,7 @@ function Card(props) {
         {props.text}
       </motion.div>
       <motion.div className="button-check"
-        animate={getAnimation(isSelected)}
+        animate={getAnimation}
         variants={variantsCard}
         transition={{ duration: 0.4, ease: 'easeOut' }}
         style={{

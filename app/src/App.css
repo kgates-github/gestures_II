@@ -156,3 +156,21 @@
 .button-check {
   box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.4);
 }
+
+.logs {
+  position:absolute;
+  top: 0px;
+  left: 10px;
+  height: 100%;
+  width: 200px;
+  border-right:1px solid #999;
+}
+
+.logs .log {
+  font-family: 'Roboto Mono', sans-serif;
+  font-size: 11px;
+  line-height: 1.2em;
+  color: #222;
+  padding: 4px;
+  border-bottom: 1px solid #ccc;
+}

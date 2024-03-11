@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { motion } from "framer-motion"
 import Card from './Card';
+import { LogContext } from './LogContext';
 
 
 function Main(props) {
+  const log = useContext(LogContext);
+
   const [state, setState] = useState('closed');
   const [isActive, setIsActive] = useState(false);
+  const [isSelected, setIsSelected] = useState(false);
   const variantsDialog = {
     left:    { opacity: 1, scale: 1,   x: "-33%", y: 0 },
     center:  { opacity: 1, scale: 1,   x: "0%",   y: 0 },
@@ -13,61 +17,74 @@ function Main(props) {
     closed:  { opacity: 0, scale: 0.7, y: -20 },
   }
 
-  const variantsCard = {
-    active:   { y: -50, opacity: 1, border: "12px solid #0098fd", scale: 1.02},
-    inactive: { y: 0, scale: 1, opacity: 0.8, border: "6px solid #999"},
+  const handleOpenPalm = (e) => {
+    log('handleOpenPalm ' + isActive + " " + state);
+    if (e.detail.handedness == 'Left') {
+      setState('center');
+      setIsActive(false);
+      setIsSelected(false);
+      // When user opens palm, unsubscribe to hand coords until they make a fist
+      props.unsubscribe("Hand_Coords", handleGestureX);
+      props.unsubscribe("Thumb_Up", handleThumbsUp);
+      props.subscribe("Closed_Fist", handleClosedFist);
+    }
   }
 
-  // TODO: Clean up event listeners, animate checkmark
-  const closeDialog = () => {
-    //setState('closed');
-    //setIsActive(false);
+  // Closed fist activates
+  const handleClosedFist = (e) => {
+    start_x = e.detail.x;
+    setIsActive(true);
+    setIsSelected(false);
+    log('handleClosedFist ' + isActive + " " + state);
+    props.subscribe("Hand_Coords", handleGestureX);
+    props.subscribe("Thumb_Up", handleThumbsUp);
   }
 
-  useEffect(() => {
+  // Once activated, track X
+  const handleGestureX = (e) => {
+    log('handleGestureX ' + isActive + " " + state);
+    //if (!isActive) return;
 
-    const handleOpenPalm = (e) => {
-      if (state != 'center' && e.detail.handedness == 'Left') {
-        setState('center');
-        setIsActive(false);
-        // When user opens palm, unsubscribe to hand coords until they make a fist
-        props.unsubscribe("Hand_Coords", handleGestureX);
-        props.subscribe("Closed_Fist", handleClosedFist);
+    offset_x = Math.round(100 * (start_x - e.detail.x))
+    if (offset_x >= 8) { 
+      if (state != 'right') {
+        setState('right')
       }
+    } else if (offset_x <= -8) {
+      if (state != 'left') setState('left')
+    } else { 
+      if (state != 'center') setState('center')
     }
+  }
 
-    // Closed fist activates
-    const handleClosedFist = (e) => {
-      start_x = e.detail.x;
-      setIsActive(true);
-      props.subscribe("Hand_Coords", handleGestureX);
-    }
-
-    // Once activated, track X
-    const handleGestureX = (e) => {
-      offset_x = Math.round(100 * (start_x - e.detail.x))
-      if (offset_x >= 8) { 
-        if (state != 'right') {
-          setState('right')
-        }
-      } else if (offset_x <= -8) {
-        if (state != 'left') setState('left')
-      } else { 
-        if (state != 'center') setState('center')
-      }
-    }
-
-    const handleNoGesture =  (e) => {
-      // Revove event listeners that require an open dialog
+  const handleThumbsUp = (e) => {
+    setIsSelected(true);
+    
+    const st = setTimeout(() => {
+      setIsActive(false);
+      setState('closed');
       props.unsubscribe("Hand_Coords", handleGestureX);
       props.unsubscribe("Closed_Fist", handleClosedFist);
-      setState('closed')
-      setIsActive(false);
-    }
+      props.unsubscribe("Thumb_Up", handleThumbsUp);
+    }, 600);
+  }
+  
+  const handleNoGesture =  (e) => {
+    // Revove event listeners that require an open dialog
+    props.unsubscribe("Hand_Coords", handleGestureX);
+    props.unsubscribe("Closed_Fist", handleClosedFist);
+    props.unsubscribe("Thumb_Up", handleThumbsUp);
+    setState('closed')
+    setIsActive(false);
+    setIsSelected(false);
+    log('-----------------------------------');
+    log('closing dialog ' + isActive + " " + state);
+  }
 
-    let start_x  = 0;
-    let offset_x = 0;
+  let start_x  = 0;
+  let offset_x = 0;
 
+  useEffect(() => {
     // Open_Palm opens dialog, no gesture closes dialog 
     props.subscribe("Open_Palm", handleOpenPalm);
     props.subscribe("No_Gesture", handleNoGesture);
@@ -77,6 +94,7 @@ function Main(props) {
       props.unsubscribe("Closed_Fist", handleClosedFist);
       props.unsubscribe("No_Gesture", () => console.log('No_Gesture unsubscribed'));
       props.unsubscribe("Hand_Coords", handleGestureX);
+      props.unsubscribe("Thumb_Up", handleThumbsUp);
     }
   }, []);
 
@@ -97,28 +115,25 @@ function Main(props) {
               transition={{ duration: 0.4, ease: 'easeOut' }} 
               style={{display: 'flex', flexDirection: 'row', alignItems: 'center', }}
             >
-              <Card 
-                state={state} 
-                closeDialog={closeDialog}
+              <Card  
                 isActive={isActive && state == 'right'} 
+                isSelected={isSelected}
                 title={"Blind Mole Rat"}
                 text={"Blind mole rats are born nearly blind, but are well adapted to living underground, where they construct extensive tunnel systems."}
                 subscribe={props.subscribe} 
                 unsubscribe={props.unsubscribe} 
               />
               <Card 
-                state={state} 
-                closeDialog={closeDialog}
                 isActive={isActive && state == 'center'}
+                isSelected={isSelected}
                 title={"Capybara"}
                 text={"Capybaras are large, semi-aquatic rodents native to South America."}
                 subscribe={props.subscribe} 
                 unsubscribe={props.unsubscribe} 
               />
               <Card 
-                state={state} 
-                closeDialog={closeDialog}
                 isActive={isActive && state == 'left'}
+                isSelected={isSelected}
                 title={"Treeshrew"}
                 text={" Treeshrews are small mammals native to the tropical forests of South and Southeast Asia."}
                 subscribe={props.subscribe} 
