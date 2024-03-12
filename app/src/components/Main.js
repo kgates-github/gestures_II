@@ -11,22 +11,30 @@ function Main(props) {
   const [isActive, setIsActive] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
   const variantsDialog = {
-    left:    { opacity: 1, scale: 1,   x: "-33%", y: 0 },
+    left:    { opacity: 1, scale: 1,   x: "0%", y: 0 },
     center:  { opacity: 1, scale: 1,   x: "0%",   y: 0 },
-    right:   { opacity: 1, scale: 1,   x: "33%",  y: 0 },
-    closed:  { opacity: 0, scale: 0.7, y: -20 },
+    right:   { opacity: 1, scale: 1,   x: "0%",  y: 0 },
+    closed:  { opacity: 0, scale: 0.7, y: -40 },
+    exit:    { opacity: 0, scale: 1 },
   }
 
+  const variantsIntro = {
+    open:  { opacity: 1, scale: 1, y: 0 },
+    closed:{ opacity: 0, scale: 1, y: 0 },
+  }
+  
   const handleOpenPalm = (e) => {
     log('handleOpenPalm ' + isActive + " " + state);
     if (e.detail.handedness == 'Left') {
       setState('center');
       setIsActive(false);
       setIsSelected(false);
+      props.setIntroDisplay('none');
       // When user opens palm, unsubscribe to hand coords until they make a fist
-      props.unsubscribe("Hand_Coords", handleGestureX);
+      //props.subscribe("Hand_Coords", handleGestureX);
       props.unsubscribe("Thumb_Up", handleThumbsUp);
       props.subscribe("Closed_Fist", handleClosedFist);
+      props.subscribe("No_Gesture", handleNoGesture);
     }
   }
 
@@ -36,6 +44,7 @@ function Main(props) {
     setIsActive(true);
     setIsSelected(false);
     log('handleClosedFist ' + isActive + " " + state);
+    props.unsubscribe("No_Gesture", handleNoGesture); // We can't accidentaly close window
     props.subscribe("Hand_Coords", handleGestureX);
     props.subscribe("Thumb_Up", handleThumbsUp);
   }
@@ -43,15 +52,12 @@ function Main(props) {
   // Once activated, track X
   const handleGestureX = (e) => {
     log('handleGestureX ' + isActive + " " + state);
-    //if (!isActive) return;
-
+    
     offset_x = Math.round(100 * (start_x - e.detail.x))
     if (offset_x >= 8) { 
-      if (state != 'right') {
-        setState('right')
-      }
-    } else if (offset_x <= -8) {
       if (state != 'left') setState('left')
+    } else if (offset_x <= -8) {
+      if (state != 'right') setState('right')
     } else { 
       if (state != 'center') setState('center')
     }
@@ -59,14 +65,20 @@ function Main(props) {
 
   const handleThumbsUp = (e) => {
     setIsSelected(true);
-    
-    const st = setTimeout(() => {
-      setIsActive(false);
-      setState('closed');
-      props.unsubscribe("Hand_Coords", handleGestureX);
-      props.unsubscribe("Closed_Fist", handleClosedFist);
+    props.unsubscribe("No_Gesture", handleNoGesture);
+    props.unsubscribe("Hand_Coords", handleGestureX);
+    props.unsubscribe("Closed_Fist", handleClosedFist);
+
+    setTimeout(() => {
       props.unsubscribe("Thumb_Up", handleThumbsUp);
-    }, 600);
+      setState('exit');
+      setIsActive(false);
+    }, 1000);
+
+    setTimeout(() => {
+      
+      setIsSelected(false);
+    }, 1200);
   }
   
   const handleNoGesture =  (e) => {
@@ -74,6 +86,7 @@ function Main(props) {
     props.unsubscribe("Hand_Coords", handleGestureX);
     props.unsubscribe("Closed_Fist", handleClosedFist);
     props.unsubscribe("Thumb_Up", handleThumbsUp);
+    props.unsubscribe("Hand_Coords", handleGestureX);
     setState('closed')
     setIsActive(false);
     setIsSelected(false);
@@ -92,7 +105,7 @@ function Main(props) {
     return () => {
       props.unsubscribe("Open_Palm", handleOpenPalm);
       props.unsubscribe("Closed_Fist", handleClosedFist);
-      props.unsubscribe("No_Gesture", () => console.log('No_Gesture unsubscribed'));
+      props.unsubscribe("No_Gesture", handleNoGesture);
       props.unsubscribe("Hand_Coords", handleGestureX);
       props.unsubscribe("Thumb_Up", handleThumbsUp);
     }
@@ -107,13 +120,14 @@ function Main(props) {
         <div id="innerContainer">
           <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
             
+
             <motion.div
               className="dialog"
               animate={state}
               variants={variantsDialog}
               initial={{ opacity: 0, scale: 0.8, y: -20 }}
               transition={{ duration: 0.4, ease: 'easeOut' }} 
-              style={{display: 'flex', flexDirection: 'row', alignItems: 'center', }}
+              style={{display: 'flex', flexDirection: 'row', alignItems: 'center', zIndex: 90}}
             >
               <Card  
                 isActive={isActive && state == 'right'} 

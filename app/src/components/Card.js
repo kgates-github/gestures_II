@@ -5,18 +5,25 @@ import { LogContext } from './LogContext';
 
 function Card(props) {
   const log = useContext(LogContext);
+
   const variantsCard = {
-    active:    { y: -50, opacity: 1, border: "12px solid #0098fd", scale: 1.02},
+    active:    { y: -50, opacity: 1, border: "12px solid #0098fd", scale: 1.03},
     inactive:  { y: 0, scale: 1, opacity: 0.8, border: "6px solid #999"},
-    showThumb: { opacity: 1, y: -24},
-    hideThumb: { opacity: 0, y: 0},
-    highlightThumb: { border: "8px solid #00cc66", opacity: 1, y: -24},
+    exit:      { opacity: 0, scale: 0.7, y: 0 },
   }
-  const getAnimation = () => {
-    if (props.isSelected && props.isActive) return 'highlightThumb';
-    else if (props.isActive) return 'showThumb';
-    else return 'hideThumb'
+  const variantsConfirm = {
+    active: { opacity: 1, y: -24},
+    inactive: { opacity: 0, y: 0},
   }
+  const variantsCheck = {
+    inactive: { border: "8px solid #888", opacity: 1, y: 0 },
+    active: { border: "8px solid #00cc66", opacity: 1, y: -24},
+  }
+
+  const circleVariants = {
+    inactive: { pathLength: 0, },
+    active: { pathLength: 1,}
+  };
   
   useEffect(() => {
     log('==============================\nCard isActive:'    + props.isActive);
@@ -25,33 +32,70 @@ function Card(props) {
   return (
     <div style={{display:"flex", flexDirection: "column", alignItems:"center"}}>
       <motion.div className="dialog-card"
-        animate={(props.isActive) ? 'active' : 'inactive'}
+        animate={() => {
+          if (props.isActive) return 'active'
+          if (!props.isActive && props.isSelected) {
+            return 'exit';
+          }
+          return 'inactive';
+        }}
         variants={variantsCard}
         transition={{ duration: 0.3, ease: 'easeOut' }} 
       >
         <h4>{props.title}</h4>
         {props.text}
       </motion.div>
-      <motion.div className="button-check"
-        animate={getAnimation}
-        variants={variantsCard}
+      <motion.div 
+        animate={(props.isActive) ? 'active' : 'inactive'}
+        variants={variantsConfirm}
         transition={{ duration: 0.4, ease: 'easeOut' }}
         style={{
-          width:"60px", 
-          height:"60px", 
-          backgroundColor:"#fff", 
-          border:"6px solid #999",
-          borderRadius:"50%", 
           display:"flex", 
+          flexDirection:"column",
           justifyContent:"center", 
           alignItems:"center", 
         }}
       >
-        <img src={process.env.PUBLIC_URL + '/svg/icon_thumb_up.svg'} 
-          alt="open hand" 
-          style={{width:'50px', height:'50px', marginTop:'4px', marginLeft:'2px'}}
-        />
+        <motion.div className="button-check"
+          animate={(props.isSelected) ? 'active' : 'inactive'}
+          variants={variantsCheck}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+          style={{
+            width:"60px", 
+            height:"60px", 
+            backgroundColor:"#fff", 
+            border:"6px solid #999",
+            borderRadius:"50%", 
+            display:"flex", 
+            justifyContent:"center", 
+            alignItems:"center", 
+          }}
+        >
+          <img 
+            src={process.env.PUBLIC_URL + '/svg/icon_thumb_up.svg'} 
+            alt="open hand" 
+            style={{width:'50px', height:'50px', marginTop:'4px', marginLeft:'2px'}}
+          />
+        </motion.div>
+        <div style={{marginTop:"12px", fontFamily:"'Source Sans Pro', sans-serif", fontSize: "20px"}}>
+          Select?
+        </div>
+        
+        <svg width="200" height="200">
+          <motion.path
+            d="M 100, 100 m -75, 0 a 75,75 0 1,0 150,0 a 75,75 0 1,0 -150,0"
+            fill="transparent"
+            strokeWidth="20"
+            stroke="green"
+            variants={circleVariants}
+            initial="inactive"
+            animate={(props.isSelected) ? 'active' : 'inactive'}
+            transition={{ duration: 0.6, ease: 'easeOut' }} 
+          />
+        </svg>
+
       </motion.div>
+      
     </div>
   );
 }

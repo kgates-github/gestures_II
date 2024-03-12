@@ -76,7 +76,7 @@
 }
 
 .annotations {
-  height:54px; 
+  height:52px; 
   font-family: 'Roboto Mono', monospace; 
   font-size:12px;
   color: #222
@@ -143,7 +143,7 @@
   font-size: 20px;
   background: #fff;
   border-radius: 30px;
-  padding: 20px;
+  padding: 28px;
   box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.4);
   overflow-y: hidden;
   margin-right: 20px;
@@ -158,12 +158,8 @@
 }
 
 .logs {
-  position:absolute;
-  top: 0px;
-  left: 10px;
-  height: 100%;
-  width: 200px;
-  border-right:1px solid #999;
+  font-family: 'Roboto Mono', sans-serif;
+  font-size: 11px;
 }
 
 .logs .log {

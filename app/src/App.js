@@ -2,24 +2,16 @@
 import './App.css';
 import GestureCapturer from './components/GestureCapturer';
 import Main from './components/Main';
+import Log from './components/Log';
 import React, { useState, useContext } from 'react';
 import { LogContext } from './components/LogContext';
 
-function Log({ entries }) {
-  const new_logs = [...entries].reverse();
-  
-  return (
-    <div className="logs">
-      {new_logs.map((entry, index) => (
-        <div key={`log-0${index + 1}`} className="log">{entry}</div>
-      ))}
-    </div>
-  );
-}
+
 
 function App() {
   const [logEntries, setLogEntries] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [introDisplay, setIntroDisplay] = useState('none');
 
   const log = (entry) => {
     setLogEntries(prevEntries => [...prevEntries, entry]);
@@ -45,7 +37,12 @@ function App() {
   return (
     <LogContext.Provider value={log}>
       <div className="App">
-        <GestureCapturer publish={publish} setIsLoaded={setIsLoaded} />
+        <GestureCapturer 
+          publish={publish} 
+          setIsLoaded={setIsLoaded} 
+          introDisplay={introDisplay}
+          setIntroDisplay={setIntroDisplay}
+        />
         <div className="header">
           <div style={{flex:1}}></div>
           <div className="title">
@@ -53,7 +50,7 @@ function App() {
           </div>
           <div style={{flex:1}}></div>
         </div>
-        {isLoaded ? <Main subscribe={subscribe} unsubscribe={unsubscribe} /> : null}
+        {isLoaded ? <Main subscribe={subscribe} unsubscribe={unsubscribe} setIntroDisplay={setIntroDisplay}/> : null}
         <Log entries={logEntries}/>
       </div>
     </LogContext.Provider>

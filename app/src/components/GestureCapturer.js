@@ -7,6 +7,7 @@ function GestureCapturer(props) {
   const [introOneDisplay, setIntroOneDisplay] = useState('flex');
   const [introTwoDisplay, setIntroTwoDisplay] = useState('none');
   const [introThreeDisplay, setIntroThreeDisplay] = useState('none');
+  
   const [webcamRunning, setWebcamRunning] = useState(false);
   let gestureRecognizer;
   const videoRef = useRef(null);
@@ -67,6 +68,7 @@ function GestureCapturer(props) {
       const initPredictWebcam = () => {
         setWebcamRunning(true);
         setIntroThreeDisplay('none');
+        props.setIntroDisplay('flex');
         predictWebcam()
         props.setIsLoaded(true);
       }
@@ -119,7 +121,6 @@ function GestureCapturer(props) {
           props.publish("No_Gesture", {});
           lastGesture = "No_Gesture";
         }
-        
         // Call this function again to keep predicting when the browser is ready.
         if (true) {
           window.requestAnimationFrame(predictWebcam);
@@ -147,10 +148,22 @@ function GestureCapturer(props) {
       </div>
       <div className="outerContainer" style={{ display: introThreeDisplay, position: "absolute", zIndex:10 }}>
         <div id="innerContainer">
-         Staring camera...
+          Staring camera...
         </div>
       </div>
-      
+      <div
+        className="outerContainer" 
+        style={{ display: props.introDisplay, position: "absolute", zIndex:10 }}
+      >
+        <div id="innerContainer">
+          <img src={process.env.PUBLIC_URL + '/svg/icon_palm_open.svg'} 
+            alt="open hand" 
+            style={{width:'60px', height:'60px'}}
+          /> 
+          <div style={{marginTop:"12px", paddingLeft:"2px"}}>Raise your right hand...</div>
+        </div>
+      </div>
+     
       <div style={{ position: "absolute", zIndex:10 }}>
         <video ref={videoRef}
           style={{ position: "absolute", display: "none", left: "0px", top: "0px", width: "100%", height: "100%" }} autoPlay playsInline></video>
