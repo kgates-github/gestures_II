@@ -10,11 +10,13 @@ function Main(props) {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   let anchor_x  = 0;
+  let new_x = 0;
   let offset_x = 0;
 
   const [state, setState] = useState('closed');
   const [isActive, setIsActive] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
+  const [isSelectMode, setIsSelectMode] = useState(false);
   const variantsDialog = {
     left:    { opacity: 1, scale: 1,   x: "0%", y: 0 },
     center:  { opacity: 1, scale: 1,   x: "0%",   y: 0 },
@@ -34,6 +36,7 @@ function Main(props) {
       setState('center');
       setIsActive(false);
       setIsSelected(false);
+      setIsSelectMode(false);
       props.setIntroDisplay('none');
       // When user opens palm, unsubscribe to hand coords until they make a fist
       props.unsubscribe("Thumb_Up", handleThumbsUp);
@@ -43,11 +46,28 @@ function Main(props) {
     }
   }
 
+  const handleOpenPalm_ = (e) => {
+    log('handleOpenPalm ' + isActive + " " + state);
+    if (e.detail.handedness == 'Left') {
+      anchor_x = e.detail.x;
+      setState('center');
+      setIsActive(true);
+      setIsSelected(false);
+      setIsSelectMode(true);
+      props.setIntroDisplay('none');
+      log('handlePointingUp ' + isActive + " " + state);
+      props.subscribe("No_Gesture", handleNoGesture); // We can't accidentaly close window
+      props.subscribe("Hand_Coords", handleGestureXY);
+      props.subscribe("Thumb_Up", handleThumbsUp);
+    }
+  }
+
   // Closed fist activates
   const handlePointingUp = (e) => {
     anchor_x = e.detail.x;
     setIsActive(true);
     setIsSelected(false);
+    setIsSelectMode(true);
     log('handlePointingUp ' + isActive + " " + state);
     props.unsubscribe("No_Gesture", handleNoGesture); // We can't accidentaly close window
     props.subscribe("Hand_Coords", handleGestureXY);
@@ -66,9 +86,17 @@ function Main(props) {
   }
 
   const handleGestureXY = (e) => {
-    
-    x.set(window.innerWidth / 2 - (window.innerWidth * (e.detail.x - anchor_x) * 1.8))
+    new_x = window.innerWidth / 2 - (window.innerWidth * (e.detail.x - anchor_x)) * 3 - 150;
+    x.set(new_x)
     y.set(200);
+    log(new_x + " " + window.innerWidth / 2)
+    if (new_x < (window.innerWidth / 2) - 210) { 
+      if (state != 'left') setState('right')
+    } else if (new_x > window.innerWidth / 2 + 210) {
+      if (state != 'right') setState('left')
+    } else { 
+      if (state != 'center') setState('center')
+    }
   }
 
   // Once activated, track X
@@ -87,6 +115,7 @@ function Main(props) {
 
   const handleThumbsUp = (e) => {
     setIsSelected(true);
+    setIsSelectMode(false);
     props.unsubscribe("No_Gesture", handleNoGesture);
     props.unsubscribe("Hand_Coords", handleGestureXY);
     props.unsubscribe("Closed_Fist", handleClosedFist);
@@ -112,6 +141,7 @@ function Main(props) {
     setState('closed')
     setIsActive(false);
     setIsSelected(false);
+    setIsSelectMode(false);
     log('-----------------------------------');
     log('closing dialog ' + isActive + " " + state);
   }
@@ -144,9 +174,8 @@ function Main(props) {
           position: "absolute",
           x: x,
           y: y,
-          translateX: "50%",
-          translateY: "50%",
           zIndex: 100,
+          display: isSelectMode ? 'block' : 'none',
         }}
       />
       <div className="outerContainer" style={{ 
