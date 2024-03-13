@@ -97,9 +97,9 @@ function GestureCapturer(props) {
               gestureName, 
               { 
                 handedness: handedness,
-                x: results.landmarks[0][0].x,
-                y: results.landmarks[0][0].y,
-                z: results.landmarks[0][0].z
+                x: results.landmarks[0][8].x,
+                y: results.landmarks[0][8].y,
+                z: results.landmarks[0][8].z
               }
             );
             lastGesture = gestureName;

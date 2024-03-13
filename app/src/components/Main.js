@@ -1,11 +1,16 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { motion } from "framer-motion"
+import { motion, useMotionValue } from "framer-motion"
 import Card from './Card';
 import { LogContext } from './LogContext';
 
 
 function Main(props) {
   const log = useContext(LogContext);
+
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  let anchor_x  = 0;
+  let offset_x = 0;
 
   const [state, setState] = useState('closed');
   const [isActive, setIsActive] = useState(false);
@@ -31,16 +36,27 @@ function Main(props) {
       setIsSelected(false);
       props.setIntroDisplay('none');
       // When user opens palm, unsubscribe to hand coords until they make a fist
-      //props.subscribe("Hand_Coords", handleGestureX);
       props.unsubscribe("Thumb_Up", handleThumbsUp);
-      props.subscribe("Closed_Fist", handleClosedFist);
+      props.unsubscribe("Hand_Coords", handleGestureXY);
+      props.subscribe("Pointing_Up", handlePointingUp);
       props.subscribe("No_Gesture", handleNoGesture);
     }
   }
 
   // Closed fist activates
+  const handlePointingUp = (e) => {
+    anchor_x = e.detail.x;
+    setIsActive(true);
+    setIsSelected(false);
+    log('handlePointingUp ' + isActive + " " + state);
+    props.unsubscribe("No_Gesture", handleNoGesture); // We can't accidentaly close window
+    props.subscribe("Hand_Coords", handleGestureXY);
+    props.subscribe("Thumb_Up", handleThumbsUp);
+  }
+
+  // Closed fist activates
   const handleClosedFist = (e) => {
-    start_x = e.detail.x;
+    anchor_x = e.detail.x;
     setIsActive(true);
     setIsSelected(false);
     log('handleClosedFist ' + isActive + " " + state);
@@ -49,11 +65,17 @@ function Main(props) {
     props.subscribe("Thumb_Up", handleThumbsUp);
   }
 
+  const handleGestureXY = (e) => {
+    
+    x.set(window.innerWidth / 2 - (window.innerWidth * (e.detail.x - anchor_x) * 1.8))
+    y.set(200);
+  }
+
   // Once activated, track X
   const handleGestureX = (e) => {
     log('handleGestureX ' + isActive + " " + state);
     
-    offset_x = Math.round(100 * (start_x - e.detail.x))
+    offset_x = Math.round(100 * (anchor_x - e.detail.x))
     if (offset_x >= 8) { 
       if (state != 'left') setState('left')
     } else if (offset_x <= -8) {
@@ -66,7 +88,7 @@ function Main(props) {
   const handleThumbsUp = (e) => {
     setIsSelected(true);
     props.unsubscribe("No_Gesture", handleNoGesture);
-    props.unsubscribe("Hand_Coords", handleGestureX);
+    props.unsubscribe("Hand_Coords", handleGestureXY);
     props.unsubscribe("Closed_Fist", handleClosedFist);
 
     setTimeout(() => {
@@ -83,7 +105,7 @@ function Main(props) {
   
   const handleNoGesture =  (e) => {
     // Revove event listeners that require an open dialog
-    props.unsubscribe("Hand_Coords", handleGestureX);
+    props.unsubscribe("Hand_Coords", handleGestureXY);
     props.unsubscribe("Closed_Fist", handleClosedFist);
     props.unsubscribe("Thumb_Up", handleThumbsUp);
     props.unsubscribe("Hand_Coords", handleGestureX);
@@ -94,9 +116,6 @@ function Main(props) {
     log('closing dialog ' + isActive + " " + state);
   }
 
-  let start_x  = 0;
-  let offset_x = 0;
-
   useEffect(() => {
     // Open_Palm opens dialog, no gesture closes dialog 
     props.subscribe("Open_Palm", handleOpenPalm);
@@ -106,13 +125,30 @@ function Main(props) {
       props.unsubscribe("Open_Palm", handleOpenPalm);
       props.unsubscribe("Closed_Fist", handleClosedFist);
       props.unsubscribe("No_Gesture", handleNoGesture);
-      props.unsubscribe("Hand_Coords", handleGestureX);
+      props.unsubscribe("Hand_Coords", handleGestureXY);
       props.unsubscribe("Thumb_Up", handleThumbsUp);
     }
   }, []);
 
+
   return (
     <>
+      <motion.div
+        style={{
+          width: 30,
+          height: 30,
+          borderRadius: "50%",
+          background: "#000",
+          opacity: 0.2,
+          filter: 'blur(5px)',
+          position: "absolute",
+          x: x,
+          y: y,
+          translateX: "50%",
+          translateY: "50%",
+          zIndex: 100,
+        }}
+      />
       <div className="outerContainer" style={{ 
         position: "absolute", 
         zIndex:10,
