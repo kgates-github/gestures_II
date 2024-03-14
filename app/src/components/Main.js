@@ -64,14 +64,17 @@ function Main(props) {
 
   // Closed fist activates
   const handlePointingUp = (e) => {
-    anchor_x = e.detail.x;
-    setIsActive(true);
-    setIsSelected(false);
-    setIsSelectMode(true);
-    log('handlePointingUp ' + isActive + " " + state);
-    props.unsubscribe("No_Gesture", handleNoGesture); // We can't accidentaly close window
-    props.subscribe("Hand_Coords", handleGestureXY);
-    props.subscribe("Thumb_Up", handleThumbsUp);
+    if (e.detail.handedness == 'Left') {
+      anchor_x = e.detail.x;
+      setIsActive(true);
+      setIsSelected(false);
+      setIsSelectMode(true);
+      props.setIntroDisplay('none');
+      log('handlePointingUp ' + isActive + " " + state);
+      props.subscribe("No_Gesture", handleNoGesture); // We can't accidentaly close window
+      props.subscribe("Hand_Coords", handleGestureXY);
+      props.subscribe("Thumb_Up", handleThumbsUp);
+    }
   }
 
   // Closed fist activates
@@ -114,22 +117,24 @@ function Main(props) {
   }
 
   const handleThumbsUp = (e) => {
-    setIsSelected(true);
-    setIsSelectMode(false);
-    props.unsubscribe("No_Gesture", handleNoGesture);
-    props.unsubscribe("Hand_Coords", handleGestureXY);
-    props.unsubscribe("Closed_Fist", handleClosedFist);
+    if (e.detail.handedness == 'Left') {
+      setIsSelected(true);
+      setIsSelectMode(false);
+      props.unsubscribe("No_Gesture", handleNoGesture);
+      props.unsubscribe("Hand_Coords", handleGestureXY);
+      props.unsubscribe("Closed_Fist", handleClosedFist);
 
-    setTimeout(() => {
-      props.unsubscribe("Thumb_Up", handleThumbsUp);
-      setState('exit');
-      setIsActive(false);
-    }, 1000);
+      setTimeout(() => {
+        props.unsubscribe("Thumb_Up", handleThumbsUp);
+        setState('exit');
+        setIsActive(false);
+      }, 1000);
 
-    setTimeout(() => {
-      
-      setIsSelected(false);
-    }, 1200);
+      setTimeout(() => {
+        
+        setIsSelected(false);
+      }, 1200);
+    }
   }
   
   const handleNoGesture =  (e) => {
@@ -149,6 +154,7 @@ function Main(props) {
   useEffect(() => {
     // Open_Palm opens dialog, no gesture closes dialog 
     props.subscribe("Open_Palm", handleOpenPalm);
+    props.subscribe("Pointing_Up", handlePointingUp);
     props.subscribe("No_Gesture", handleNoGesture);
     
     return () => {

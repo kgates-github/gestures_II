@@ -56,7 +56,43 @@ function Card(props) {
           alignItems:"center", 
         }}
       >
-        <motion.div className="button-check"
+        <svg width="82" height="82">
+          <motion.path
+            d="M 43, 43 m -35, 0 a 35,35 0 1,0 70,0 a 35,35 0 1,0 -70,0"
+            fill="transparent"
+            strokeWidth="8"
+            stroke="#00cc66"
+            variants={circleVariants}
+            initial="inactive"
+            animate={(props.isSelected) ? 'active' : 'inactive'}
+            transition={{ duration: 0.6, ease: 'easeOut' }} 
+          >
+          </motion.path>
+        </svg>
+        <img 
+          src={process.env.PUBLIC_URL + '/svg/icon_thumb_up.svg'} 
+          alt="open hand" 
+          style={{
+            position:"relative", top:"-65px", left:"3px",
+            width:'50px', height:'50px', marginTop:'4px', marginLeft:'2px'}}
+        />
+        <div style={{
+          position:"relative", top:"-65px",
+          marginTop:"12px", fontFamily:"'Source Sans Pro', sans-serif", fontSize: "20px"}}>
+          Select?
+        </div>
+        
+        
+      </motion.div>
+      
+    </div>
+  );
+}
+
+export default Card;
+
+/*
+<motion.div className="button-check"
           animate={(props.isSelected) ? 'active' : 'inactive'}
           variants={variantsCheck}
           transition={{ duration: 0.4, ease: 'easeOut' }}
@@ -77,32 +113,6 @@ function Card(props) {
             style={{width:'50px', height:'50px', marginTop:'4px', marginLeft:'2px'}}
           />
         </motion.div>
-        <div style={{marginTop:"12px", fontFamily:"'Source Sans Pro', sans-serif", fontSize: "20px"}}>
-          Select?
-        </div>
-        
-        <svg width="200" height="200">
-          <motion.path
-            d="M 100, 100 m -75, 0 a 75,75 0 1,0 150,0 a 75,75 0 1,0 -150,0"
-            fill="transparent"
-            strokeWidth="20"
-            stroke="green"
-            variants={circleVariants}
-            initial="inactive"
-            animate={(props.isSelected) ? 'active' : 'inactive'}
-            transition={{ duration: 0.6, ease: 'easeOut' }} 
-          />
-        </svg>
-
-      </motion.div>
-      
-    </div>
-  );
-}
-
-export default Card;
-
-/*
 const variants = {
   open: { opacity: 1, x: 0 },
   closed: { opacity: 0, x: "-100%" },
