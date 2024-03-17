@@ -1,7 +1,7 @@
 
 import './App.css';
 import GestureCapturer from './components/GestureCapturer';
-import Main from './components/Main';
+import GestureMenu from './components/GestureMenu';
 import Log from './components/Log';
 import React, { useState, useContext } from 'react';
 import { LogContext } from './components/LogContext';
@@ -50,7 +50,7 @@ function App() {
           </div>
           <div style={{flex:1}}></div>
         </div>
-        {isLoaded ? <Main subscribe={subscribe} unsubscribe={unsubscribe} setIntroDisplay={setIntroDisplay}/> : null}
+        {isLoaded ? <GestureMenu subscribe={subscribe} unsubscribe={unsubscribe} setIntroDisplay={setIntroDisplay}/> : null}
         <Log entries={logEntries}/>
       </div>
     </LogContext.Provider>

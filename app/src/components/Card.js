@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
+import GestureTarget from './GestureTarget';
 import { motion } from "framer-motion"
 import { LogContext } from './LogContext';
 
@@ -6,46 +7,52 @@ import { LogContext } from './LogContext';
 function Card(props) {
   const log = useContext(LogContext);
 
-  const variantsCard = {
-    active:    { y: -50, opacity: 1, border: "12px solid #0098fd", scale: 1.03},
-    inactive:  { y: 0, scale: 1, opacity: 0.8, border: "6px solid #999"},
-    exit:      { opacity: 0, scale: 0.7, y: 0 },
+  const variants = {
+    active:    { 
+      y: -50, 
+      opacity: 1, 
+      border: "8px solid #0098fd", 
+      scale: 1.03,
+      transition: { duration: 0.3, ease: 'easeOut' }
+    },
+    inactive: { 
+      y: 0, 
+      scale: 1, 
+      opacity: 1, 
+      border: "4px solid #999",
+      transition: { duration: 0.3, ease: 'easeOut' }
+    },
+    exit:{ 
+      opacity: 0, 
+      scale: 0.7, 
+      y: 0 
+    },
   }
-  const variantsConfirm = {
-    active: { opacity: 1, y: -24},
-    inactive: { opacity: 0, y: 0},
-  }
-  const variantsCheck = {
-    inactive: { border: "8px solid #888", opacity: 1, y: 0 },
-    active: { border: "8px solid #00cc66", opacity: 1, y: -24},
-  }
-
-  const circleVariants = {
-    inactive: { pathLength: 0, },
-    active: { pathLength: 1,}
-  };
   
   useEffect(() => {
-    log('==============================\nCard isActive:'    + props.isActive);
-  }, []);
+    if (props.isSelected && props.isActive) props.setAnimal(props.title);
+  }, [props.isSelected, props.isActive]);
 
   return (
-    <div style={{display:"flex", flexDirection: "column", alignItems:"center"}}>
-      <motion.div className="dialog-card"
-        animate={() => {
-          if (props.isActive) return 'active'
-          if (!props.isActive && props.isSelected) {
-            return 'exit';
-          }
-          return 'inactive';
-        }}
-        variants={variantsCard}
-        transition={{ duration: 0.3, ease: 'easeOut' }} 
+    <div className="menu-card-outer" style={{display:"flex", flexDirection: "column", alignItems:"center"}}>
+      <motion.div className="menu-card"
+        animate={props.isActive ? 'active' : 'inactive'}
+        variants={variants}
       >
-        <h4>{props.title}</h4>
+        <div style={{fontSize:"16px", fontWeight:"700"}}>{props.title}</div>
         {props.text}
       </motion.div>
-      <motion.div 
+      
+      {/*<GestureTarget isActive={props.isActive} isSelected={props.isSelected}/>*/}
+    </div>
+  );
+}
+
+export default Card;
+
+/*
+
+<motion.div
         animate={(props.isActive) ? 'active' : 'inactive'}
         variants={variantsConfirm}
         transition={{ duration: 0.4, ease: 'easeOut' }}
@@ -73,25 +80,17 @@ function Card(props) {
           src={process.env.PUBLIC_URL + '/svg/icon_thumb_up.svg'} 
           alt="open hand" 
           style={{
-            position:"relative", top:"-65px", left:"3px",
-            width:'50px', height:'50px', marginTop:'4px', marginLeft:'2px'}}
+            position:"relative", top:"-68px", left:"4px",
+            width:'60px', height:'60px', marginTop:'4px', marginLeft:'2px'}}
         />
         <div style={{
           position:"relative", top:"-65px",
-          marginTop:"12px", fontFamily:"'Source Sans Pro', sans-serif", fontSize: "20px"}}>
+          marginTop:"12px", fontFamily:"'Source Sans Pro', sans-serif", fontSize: "12px"}}>
           Select?
         </div>
-        
-        
       </motion.div>
-      
-    </div>
-  );
-}
 
-export default Card;
 
-/*
 <motion.div className="button-check"
           animate={(props.isSelected) ? 'active' : 'inactive'}
           variants={variantsCheck}

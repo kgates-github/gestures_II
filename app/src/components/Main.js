@@ -1,7 +1,9 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { motion, useMotionValue } from "framer-motion"
+import Animal from './Animal';
 import Card from './Card';
+import CoachTip from './CoachTip';
 import { LogContext } from './LogContext';
+import { motion, useMotionValue } from "framer-motion"
 
 
 function Main(props) {
@@ -14,9 +16,12 @@ function Main(props) {
   let offset_x = 0;
 
   const [state, setState] = useState('closed');
+  const [animal, setAnimal] = useState(null);
   const [isActive, setIsActive] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
   const [isSelectMode, setIsSelectMode] = useState(false);
+  const [showCoachTip, setShowCoachTip] = useState(false);
+
   const variantsDialog = {
     left:    { opacity: 1, scale: 1,   x: "0%", y: 0 },
     center:  { opacity: 1, scale: 1,   x: "0%",   y: 0 },
@@ -37,6 +42,7 @@ function Main(props) {
       setIsActive(false);
       setIsSelected(false);
       setIsSelectMode(false);
+      setShowCoachTip(true);
       props.setIntroDisplay('none');
       // When user opens palm, unsubscribe to hand coords until they make a fist
       props.unsubscribe("Thumb_Up", handleThumbsUp);
@@ -62,7 +68,6 @@ function Main(props) {
     }
   }
 
-  // Closed fist activates
   const handlePointingUp = (e) => {
     if (e.detail.handedness == 'Left') {
       anchor_x = e.detail.x;
@@ -70,6 +75,7 @@ function Main(props) {
       setIsSelected(false);
       setIsSelectMode(true);
       props.setIntroDisplay('none');
+      setShowCoachTip(false);
       log('handlePointingUp ' + isActive + " " + state);
       props.subscribe("No_Gesture", handleNoGesture); // We can't accidentaly close window
       props.subscribe("Hand_Coords", handleGestureXY);
@@ -77,7 +83,6 @@ function Main(props) {
     }
   }
 
-  // Closed fist activates
   const handleClosedFist = (e) => {
     anchor_x = e.detail.x;
     setIsActive(true);
@@ -91,7 +96,7 @@ function Main(props) {
   const handleGestureXY = (e) => {
     new_x = window.innerWidth / 2 - (window.innerWidth * (e.detail.x - anchor_x)) * 3 - 150;
     x.set(new_x)
-    y.set(200);
+    y.set(window.innerHeight / 3);
     log(new_x + " " + window.innerWidth / 2)
     if (new_x < (window.innerWidth / 2) - 210) { 
       if (state != 'left') setState('right')
@@ -131,9 +136,9 @@ function Main(props) {
       }, 1000);
 
       setTimeout(() => {
-        
         setIsSelected(false);
-      }, 1200);
+      }, 1010);
+
     }
   }
   
@@ -166,6 +171,30 @@ function Main(props) {
     }
   }, []);
 
+  const animalImage = (animal) => {
+    if (animal == "Blind Mole Rat") {
+      return (
+        <img src={process.env.PUBLIC_URL + '/png/blindmolerat.png'} 
+          alt="Animal" 
+          style={{width:'200px', height:"auto"}}
+        />
+      );
+    } else if (animal == "Capybara") {
+      return (
+        <img src={process.env.PUBLIC_URL + '/png/capybara.png'} 
+          alt="Animal" 
+          style={{width:'200px', height:"auto"}}
+        />
+      );
+    } else if (animal == "Treeshrew") {
+      return (
+        <img src={process.env.PUBLIC_URL + '/png/treeshrew.png'} 
+          alt="Animal" 
+          style={{width:'200px', height:"auto"}}
+        />
+      );
+    }
+  }
 
   return (
     <>
@@ -175,8 +204,8 @@ function Main(props) {
           height: 30,
           borderRadius: "50%",
           background: "#000",
-          opacity: 0.2,
-          filter: 'blur(5px)',
+          opacity: 0.3,
+          filter: 'blur(10px)',
           position: "absolute",
           x: x,
           y: y,
@@ -184,14 +213,19 @@ function Main(props) {
           display: isSelectMode ? 'block' : 'none',
         }}
       />
+      <Animal animal={animal} isActive={animal != null} />
+      
       <div className="outerContainer" style={{ 
         position: "absolute", 
         zIndex:10,
       }}>
         <div id="innerContainer">
+          <CoachTip 
+            image={"icon_point_up"} 
+            text={"HINT: Point your index finger up"}
+            showCoachTip={showCoachTip}
+          />
           <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
-            
-
             <motion.div
               className="dialog"
               animate={state}
@@ -207,6 +241,7 @@ function Main(props) {
                 text={"Blind mole rats are born nearly blind, but are well adapted to living underground, where they construct extensive tunnel systems."}
                 subscribe={props.subscribe} 
                 unsubscribe={props.unsubscribe} 
+                setAnimal={setAnimal}
               />
               <Card 
                 isActive={isActive && state == 'center'}
@@ -215,14 +250,16 @@ function Main(props) {
                 text={"Capybaras are large, semi-aquatic rodents native to South America."}
                 subscribe={props.subscribe} 
                 unsubscribe={props.unsubscribe} 
+                setAnimal={setAnimal}
               />
               <Card 
                 isActive={isActive && state == 'left'}
                 isSelected={isSelected}
                 title={"Treeshrew"}
-                text={" Treeshrews are small mammals native to the tropical forests of South and Southeast Asia."}
+                text={"Treeshrews are small mammals native to the tropical forests of South and Southeast Asia."}
                 subscribe={props.subscribe} 
                 unsubscribe={props.unsubscribe} 
+                setAnimal={setAnimal}
               />
             </motion.div>
           </div>

@@ -131,11 +131,11 @@
   font-weight:500;
 }
 
-.dialog {
-  opacity: 0;
+.menu-card-outer {
+  margin-right: 20px;
 }
 
-.dialog-card {
+.menu-card {
   width: 300px;
   height: 300px;
   font-family: 'Source Sans Pro', sans-serif;
@@ -146,10 +146,9 @@
   padding: 28px;
   box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.4);
   overflow-y: hidden;
-  margin-right: 20px;
 }
 
-.dialog-card:last-child {
+.menu-card:last-child {
   margin-right: 0px;
 }
 

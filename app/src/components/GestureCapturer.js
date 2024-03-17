@@ -20,6 +20,7 @@ function GestureCapturer(props) {
   let lastGesture = null;
   let handedness = '';
   let frameCount = 0;
+  const xs = [0, 0, 0];
 
   
   useEffect(() => {
@@ -92,7 +93,12 @@ function GestureCapturer(props) {
           if (lastGesture != results.gestures[0][0].categoryName && results.gestures[0][0].categoryName != 'None') {
             gestureName = results.gestures[0][0].categoryName;
             handedness = results.handedness[0][0].categoryName;
-            console.log('Detected gesture: ' + gestureName + ' ' + handedness);
+            //console.log('Detected gesture: ' + gestureName + ' ' + handedness);
+
+            xs[0] = results.landmarks[0][0].x;
+            xs[1] = results.landmarks[0][0].x;
+            xs[2] = results.landmarks[0][0].x;
+
             props.publish(
               gestureName, 
               { 
@@ -106,11 +112,13 @@ function GestureCapturer(props) {
           } else if (frameCount % 30 === 0 && 
             lastGesture == results.gestures[0][0].categoryName && 
             lastGesture != "No_Gesture") {
-              // If the same gesture is detected, publish x, y, z coordinates every 300 frames
+              // If the same gesture is detected, publish x, y, z coordinates every 30 frames
+              
               props.publish(
                 "Hand_Coords", 
                 {
-                  x: results.landmarks[0][0].x,
+                  handedness: handedness,
+                  x: results.landmarks[0][0].x, //xs.slice(1).concat(results.landmarks[0][0].x).reduce((a, b) => a + b, 0) / xs.length,
                   y: results.landmarks[0][0].y,
                   z: results.landmarks[0][0].z
                 }
