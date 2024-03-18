@@ -16,7 +16,7 @@ function GestureMenu(props) {
   const [selectionMade, setSelectionMade] = useState(false); // Whether thumb is up
   const [showNotification, setShowNotification] = useState(false); // Whether to show confirmation window
   const [animal, setAnimal] = useState(null); // Which animal was selected
-  const [showCoachTip, setShowCoachTip] = useState(false); // Whether to show coach tip
+  const [showCoachTip, setShowCoachTip] = useState(null); // Whether to show coach tip
   const [isExiting, setIsExiting] = useState(false);  
 
   // Animation defs
@@ -81,7 +81,7 @@ function GestureMenu(props) {
     new_x = window.innerWidth / 2 - (window.innerWidth * (e.detail.x - anchor_x)) * 3 - 150;
     x.set(new_x)
     y.set(window.innerHeight / 3);
-    log(new_x + " " + window.innerWidth / 2)
+    //log(new_x + " " + window.innerWidth / 2)
     if (new_x < (window.innerWidth / 2) - 210) { 
       if (activeCard != 'left') setActiveCard('left')
     } else if (new_x > window.innerWidth / 2 + 210) {
@@ -93,24 +93,13 @@ function GestureMenu(props) {
 
   const handleThumbsUp = (e) => {
     if (e.detail.handedness == 'Left') {
+      props.unsubscribe("Thumb_Up", handleThumbsUp);
       props.unsubscribe("No_Gesture", handleNoGesture);
       props.unsubscribe("Hand_Coords", handleGestureXY);
       setShowCoachTip(null)
       setIsInSelectionMode(true);
       setSelectionMade(true);
       setIsExiting(false);
-      
-      /*
-      setTimeout(() => {
-        props.unsubscribe("Thumb_Up", handleThumbsUp);
-        setState('exit');
-        setIsActive(false);
-      }, 1000);
-
-      setTimeout(() => {
-        setIsSelected(false);
-      }, 1010);
-      */
     }
   }
   
@@ -119,11 +108,13 @@ function GestureMenu(props) {
     props.unsubscribe("Hand_Coords", handleGestureXY);
     props.unsubscribe("Thumb_Up", handleThumbsUp);
     setIsActive(false);
-    setShowCoachTip(false);
+    setShowCoachTip(null);
     setIsInSelectionMode(false);
     setSelectionMade(false);
+
+    // Reopen intro coach tip
+    setShowCoachTip("intro");
   
-    log('---------');
     log('Closing menu ' + isActive);
   }
 
@@ -134,16 +125,21 @@ function GestureMenu(props) {
     setIsActive(false);
     setIsInSelectionMode(false);
     setSelectionMade(false);
-    setIsExiting(false);
-
+    
     props.unsubscribe("Pointing_Up", handlePointingUp);
     props.unsubscribe("Hand_Coords", handleGestureXY);
     props.unsubscribe("Thumb_Up", handleThumbsUp);
     props.subscribe("Open_Palm", handleOpenPalm);
     props.subscribe("No_Gesture", handleNoGesture);
+
+    //setShowCoachTip("intro");
   }
 
   useEffect(() => {
+    // Open coach tip
+    setShowCoachTip("intro");
+    setIsActive(false);
+
     // Open_Palm opens dialog, no gesture closes dialog 
     props.subscribe("Open_Palm", handleOpenPalm);
     props.subscribe("Pointing_Up", handlePointingUp);
@@ -168,7 +164,7 @@ function GestureMenu(props) {
 
   return (
     <>
-      <GestureShadowDot x={x} y={y} isInSelectionMode={isInSelectionMode}/>
+      <GestureShadowDot x={x} y={y} isInSelectionMode={isInSelectionMode && !selectionMade}/>
       <div className="outerContainer" style={{ 
         position: "absolute", 
         zIndex:10,
@@ -177,10 +173,16 @@ function GestureMenu(props) {
         <NotificationWindow 
           showNotification={showNotification} 
           setShowNotification={setShowNotification} 
+          setShowCoachTip={setShowCoachTip}
           animal={animal} 
         />
 
         <div id="innerContainer">
+          <CoachTip 
+            image={"icon_palm_open"} 
+            text={"Raise your right hand..."}
+            showCoachTip={showCoachTip == "intro"}
+          />
           <CoachTip 
             image={"icon_point_up"} 
             text={"HINT: Point your index finger up"}
@@ -194,12 +196,13 @@ function GestureMenu(props) {
           <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop:"140px"}}>
             <motion.div
               className="dialog"
-              animate={isActive ? 'isActive' : 'isInactive'}
-              variants={variantsMenu}
-              initial={"isInactive"}
+              //animate={isActive ? 'isActive' : 'isInactive'}
+              //variants={variantsMenu}
+              //initial={"isInactive"}
               style={{display: 'flex', flexDirection: 'row', alignItems: 'center', zIndex: 90}}
             >
               <Card 
+                showCard={isActive}
                 isActive={isInSelectionMode && activeCard == 'left'}
                 isSelected={selectionMade && activeCard == 'left'}
                 title={"Treeshrew"}
@@ -212,6 +215,7 @@ function GestureMenu(props) {
                 selectAndClose={selectAndClose}
               />
               <Card 
+                showCard={isActive}
                 isActive={isInSelectionMode && activeCard == 'center'}
                 isSelected={selectionMade && activeCard == 'center'}
                 title={"Capybarra"}
@@ -224,6 +228,7 @@ function GestureMenu(props) {
                 selectAndClose={selectAndClose}
               />
               <Card 
+                showCard={isActive}
                 isActive={isInSelectionMode && activeCard == 'right'}
                 isSelected={selectionMade && activeCard == 'right'}
                 title={"Blind Mole Rat"}

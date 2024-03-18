@@ -50,7 +50,10 @@ function App() {
           </div>
           <div style={{flex:1}}></div>
         </div>
-        {isLoaded ? <GestureMenu subscribe={subscribe} unsubscribe={unsubscribe} setIntroDisplay={setIntroDisplay}/> : null}
+        {isLoaded ? <GestureMenu 
+          subscribe={subscribe} 
+          unsubscribe={unsubscribe} 
+          setIntroDisplay={setIntroDisplay}/> : null}
         <Log entries={logEntries}/>
       </div>
     </LogContext.Provider>

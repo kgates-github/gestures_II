@@ -28,7 +28,11 @@ function NotificationWindow(props) {
     initial="isInactive"
     variants={variants}
     onAnimationComplete={() => {
-      if (props.showNotification) props.setShowNotification(false);
+      if (props.showNotification) {
+        props.setShowNotification(false);
+      } else {
+        props.setShowCoachTip("intro");
+      }
     }}
     style={{
       position:"absolute",
@@ -39,7 +43,8 @@ function NotificationWindow(props) {
       height: "0px",
       width: "240px",
       alignItems: "center",
-      background: "#eee",
+      background: "#333",
+      color: "#fff",
       zIndex: 100000,
       borderRadius: "16px",
       padding: "20px",

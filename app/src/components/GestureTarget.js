@@ -31,6 +31,7 @@ function GestureTarget(props) {
         flexDirection:"column",
         justifyContent:"center", 
         alignItems:"center", 
+        background: "none",
       }}
     >
       <svg width="82" height="82">
@@ -69,18 +70,14 @@ function GestureTarget(props) {
       <motion.img 
         src={process.env.PUBLIC_URL + '/svg/icon_thumb_up.svg'} 
         style={{
-          position:"relative", top:"-68px", left:"4px",
-          width:'60px', height:'60px', marginTop:'4px', marginLeft:'2px'
+          position:"relative", top:"-65px", left:"4px",
+          width:'50px', height:'50px', marginTop:'4px', marginLeft:'2px'
         }}
         initial={{ opacity: 1 }}
         animate={props.isSelected ? { opacity: 0 } : { opacity: 1 }}
         transition={{ delay: 0, duration: 0.4 }}
       />
-      <div style={{
-        position:"relative", top:"-65px",
-        marginTop:"12px", fontFamily:"'Source Sans Pro', sans-serif", fontSize: "12px"}}>
-        Select?
-      </div>
+      
     </motion.div>
   );
 }

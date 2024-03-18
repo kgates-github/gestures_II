@@ -69,7 +69,7 @@ function GestureCapturer(props) {
       const initPredictWebcam = () => {
         setWebcamRunning(true);
         setIntroThreeDisplay('none');
-        props.setIntroDisplay('flex');
+        //props.setIntroDisplay('flex');
         predictWebcam()
         props.setIsLoaded(true);
       }
@@ -109,7 +109,7 @@ function GestureCapturer(props) {
               }
             );
             lastGesture = gestureName;
-          } else if (frameCount % 30 === 0 && 
+          } else if (frameCount % 10 === 0 && 
             lastGesture == results.gestures[0][0].categoryName && 
             lastGesture != "No_Gesture") {
               // If the same gesture is detected, publish x, y, z coordinates every 30 frames
@@ -159,6 +159,7 @@ function GestureCapturer(props) {
           Staring camera...
         </div>
       </div>
+      {/*
       <div
         className="outerContainer" 
         style={{ display: props.introDisplay, position: "absolute", zIndex:10 }}
@@ -171,7 +172,7 @@ function GestureCapturer(props) {
           <div style={{marginTop:"12px", paddingLeft:"2px"}}>Raise your right hand...</div>
         </div>
       </div>
-     
+      */}
       <div style={{ position: "absolute", zIndex:10 }}>
         <video ref={videoRef}
           style={{ position: "absolute", display: "none", left: "0px", top: "0px", width: "100%", height: "100%" }} autoPlay playsInline></video>
