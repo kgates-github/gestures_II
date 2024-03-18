@@ -51,16 +51,18 @@ function GestureTarget(props) {
           transition={{ duration: 0.5, ease: 'easeOut' }} 
         />
         <motion.path
-            d="M 23.5 46 L 39.1797 58.9199 L 63.6797 27.4199"
+          d="M 23.5 46 L 39.1797 58.9199 L 63.6797 27.4199"
           fill="transparent"
           strokeWidth="8"
           stroke="#19B300"
           stroke-linejoin="round"
           variants={checkVariants}
           initial="inactive"
-
           animate={props.isSelected ? 'active' : 'inactive'}
           transition={{ duration: 0.2, ease: 'easeOut', delay: 0.4 }} 
+          onAnimationComplete={() => {
+            props.setIsExiting(true)
+          }}
         />
       </svg>
         

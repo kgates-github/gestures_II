@@ -17,6 +17,7 @@ function GestureMenu(props) {
   const [showNotification, setShowNotification] = useState(false); // Whether to show confirmation window
   const [animal, setAnimal] = useState(null); // Which animal was selected
   const [showCoachTip, setShowCoachTip] = useState(false); // Whether to show coach tip
+  const [isExiting, setIsExiting] = useState(false);  
 
   // Animation defs
   const variantsMenu = {
@@ -47,11 +48,12 @@ function GestureMenu(props) {
       setIsActive(true);
       setIsInSelectionMode(false);
       setSelectionMade(false);
-      setShowCoachTip(true);
+      setIsExiting(false);
+      setShowCoachTip("point_up");
       props.setIntroDisplay('none');
 
       // When user opens palm, unsubscribe to hand coords until they make a fist
-      //props.unsubscribe("Thumb_Up", handleThumbsUp);
+      props.unsubscribe("Thumb_Up", handleThumbsUp);
       props.unsubscribe("Hand_Coords", handleGestureXY);
       props.subscribe("Pointing_Up", handlePointingUp);
       props.subscribe("No_Gesture", handleNoGesture);
@@ -64,13 +66,14 @@ function GestureMenu(props) {
       setIsActive(true);
       setIsInSelectionMode(true);
       setSelectionMade(false);
-      setShowCoachTip(false);
+      setIsExiting(false);
+      setShowCoachTip("point_up_and_move");
       props.setIntroDisplay('none');
       log('handlePointingUp ' + isActive);
 
       props.subscribe("No_Gesture", handleNoGesture); // We can't accidentaly close window
       props.subscribe("Hand_Coords", handleGestureXY);
-      //props.subscribe("Thumb_Up", handleThumbsUp);
+      props.subscribe("Thumb_Up", handleThumbsUp);
     }
   }
 
@@ -88,15 +91,16 @@ function GestureMenu(props) {
     }
   }
 
-  /*
   const handleThumbsUp = (e) => {
     if (e.detail.handedness == 'Left') {
-      setIsSelected(true);
-      setIsSelectMode(false);
       props.unsubscribe("No_Gesture", handleNoGesture);
       props.unsubscribe("Hand_Coords", handleGestureXY);
-      props.unsubscribe("Closed_Fist", handleClosedFist);
-
+      setShowCoachTip(null)
+      setIsInSelectionMode(true);
+      setSelectionMade(true);
+      setIsExiting(false);
+      
+      /*
       setTimeout(() => {
         props.unsubscribe("Thumb_Up", handleThumbsUp);
         setState('exit');
@@ -106,15 +110,14 @@ function GestureMenu(props) {
       setTimeout(() => {
         setIsSelected(false);
       }, 1010);
-
+      */
     }
   }
-  */
+  
   const handleNoGesture =  (e) => {
     // Revove event listeners that require an open dialog
-    //props.unsubscribe("Hand_Coords", handleGestureXY);
-    //props.unsubscribe("Thumb_Up", handleThumbsUp);
-    //props.unsubscribe("Hand_Coords", handleGestureX)
+    props.unsubscribe("Hand_Coords", handleGestureXY);
+    props.unsubscribe("Thumb_Up", handleThumbsUp);
     setIsActive(false);
     setShowCoachTip(false);
     setIsInSelectionMode(false);
@@ -122,6 +125,22 @@ function GestureMenu(props) {
   
     log('---------');
     log('Closing menu ' + isActive);
+  }
+
+  const selectAndClose = (title) => {
+    log("selectAndClose: " + title)
+    setAnimal(title);
+    setShowNotification(true);
+    setIsActive(false);
+    setIsInSelectionMode(false);
+    setSelectionMade(false);
+    setIsExiting(false);
+
+    props.unsubscribe("Pointing_Up", handlePointingUp);
+    props.unsubscribe("Hand_Coords", handleGestureXY);
+    props.unsubscribe("Thumb_Up", handleThumbsUp);
+    props.subscribe("Open_Palm", handleOpenPalm);
+    props.subscribe("No_Gesture", handleNoGesture);
   }
 
   useEffect(() => {
@@ -134,16 +153,18 @@ function GestureMenu(props) {
       props.unsubscribe("Open_Palm", handleOpenPalm);
       props.unsubscribe("Pointing_Up", handlePointingUp);
       props.unsubscribe("No_Gesture", handleNoGesture);
-      //props.unsubscribe("Hand_Coords", handleGestureXY);
-      //props.unsubscribe("Thumb_Up", handleThumbsUp);
+      props.unsubscribe("Hand_Coords", handleGestureXY);
+      props.unsubscribe("Thumb_Up", handleThumbsUp);
     }
   }, []);
 
-  const getGestureShadowDot = () => {
-    return (
-      <GestureShadowDot x={x} y={y} isInSelectionMode={isInSelectionMode}/>
-    );
-  }
+  useEffect(() => {
+    log('useEffect selectionMade ' + selectionMade); // This will log the updated value
+  }, [selectionMade]);
+
+  useEffect(() => {
+    log('isExiting ' + isExiting);
+  }, [isExiting]);
 
   return (
     <>
@@ -156,26 +177,26 @@ function GestureMenu(props) {
         <NotificationWindow 
           showNotification={showNotification} 
           setShowNotification={setShowNotification} 
-          message={"You have selected a " + animal + "!"} 
+          animal={animal} 
         />
 
         <div id="innerContainer">
           <CoachTip 
             image={"icon_point_up"} 
             text={"HINT: Point your index finger up"}
-            showCoachTip={showCoachTip}
+            showCoachTip={showCoachTip == "point_up"}
           />
-          <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+           <CoachTip 
+            image={"point_and_move"} 
+            text={"HINT: Move you finger left and right"}
+            showCoachTip={showCoachTip == "point_up_and_move"}
+          />
+          <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop:"140px"}}>
             <motion.div
               className="dialog"
               animate={isActive ? 'isActive' : 'isInactive'}
               variants={variantsMenu}
               initial={"isInactive"}
-              onAnimationComplete={() => {
-                if (!isActive) {
-                  setShowNotification(true);
-                }
-              }}
               style={{display: 'flex', flexDirection: 'row', alignItems: 'center', zIndex: 90}}
             >
               <Card 
@@ -186,6 +207,9 @@ function GestureMenu(props) {
                 subscribe={props.subscribe} 
                 unsubscribe={props.unsubscribe} 
                 setAnimal={setAnimal}
+                setIsExiting={setIsExiting}
+                isExiting={isExiting}
+                selectAndClose={selectAndClose}
               />
               <Card 
                 isActive={isInSelectionMode && activeCard == 'center'}
@@ -195,6 +219,9 @@ function GestureMenu(props) {
                 subscribe={props.subscribe} 
                 unsubscribe={props.unsubscribe} 
                 setAnimal={setAnimal}
+                setIsExiting={setIsExiting}
+                isExiting={isExiting}
+                selectAndClose={selectAndClose}
               />
               <Card 
                 isActive={isInSelectionMode && activeCard == 'right'}
@@ -204,6 +231,9 @@ function GestureMenu(props) {
                 subscribe={props.subscribe} 
                 unsubscribe={props.unsubscribe} 
                 setAnimal={setAnimal}
+                setIsExiting={setIsExiting}
+                isExiting={isExiting}
+                selectAndClose={selectAndClose}
               />
             </motion.div>
           </div>

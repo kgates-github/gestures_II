@@ -44,7 +44,7 @@ function NotificationWindow(props) {
       borderRadius: "16px",
       padding: "20px",
     }}>
-      You selected a {Math.random() > 0.5 ? "Treeshrew" : "Capybarra"}!
+      You selected a {props.animal}!
     </motion.div>
   );
 }

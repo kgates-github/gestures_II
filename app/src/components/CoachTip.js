@@ -27,9 +27,10 @@ function CoachTip(props) {
     initial="closed"
     variants={variants}
     style={{
-      position:"relative",
-      top: "0px",
-      left: "0px",
+      position:"fixed",
+      top: "150px",
+      marginLeft: "auto",
+      marginRight: "auto",
       width: "200px",
       display: "flex",
       flexDirection: "column",
@@ -43,7 +44,7 @@ function CoachTip(props) {
       <div style={{width:"180px", textAlign:"center", marginBottom:"8px", color:"#444"}}>{props.text}</div>
       <img src={process.env.PUBLIC_URL + '/svg/' + props.image + '.svg'} 
         alt="open hand" 
-        style={{width:'60px', height:'60px'}}
+        style={{width:'auto', height:'60px'}}
       />
     </motion.div>
   );
