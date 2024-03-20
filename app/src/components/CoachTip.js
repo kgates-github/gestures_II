@@ -31,6 +31,7 @@ function CoachTip(props) {
       top: "150px",
       marginLeft: "auto",
       marginRight: "auto",
+      marginBottom: "auto",
       width: "200px",
       display: "flex",
       flexDirection: "column",
@@ -41,7 +42,7 @@ function CoachTip(props) {
       borderRadius: "16px",
       padding: "20px",
     }}>
-      <div style={{width:"180px", textAlign:"center", marginBottom:"8px", color:"#444"}}>{props.text}</div>
+      <div style={{width:"150px", textAlign:"center", marginBottom:"8px", color:"#444"}}>{props.text}</div>
       <img src={process.env.PUBLIC_URL + '/svg/' + props.image + '.svg'} 
         alt="open hand" 
         style={{width:'auto', height:'60px'}}

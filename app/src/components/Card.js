@@ -11,16 +11,16 @@ function Card(props) {
 
   const variants = {
     active:    { 
-      y: -50, 
+      y: -40, 
       opacity: 1, 
       border: "8px solid #0098fd", 
-      scale: 1.03,
+      scale: 1.06,
       transition: { duration: 0.3, ease: 'easeOut' }
     },
     inactive: { 
       y: 0, 
-      scale: 1, 
       opacity: 1, 
+      scale: 1,
       border: "4px solid #999",
       transition: { duration: 0.3, ease: 'easeOut' }
     },
@@ -43,11 +43,13 @@ function Card(props) {
   const variantsOuter = {
     active:    { 
       y: 0, 
+      scale: 1,
       opacity: 1, 
       transition: { duration: 0.3, ease: 'easeOut' }
     },
     inactive: { 
-      y: -50, 
+      y: -50,
+      scale: 0.9,
       opacity: 0,
       transition: { duration: 0.3, ease: 'easeOut' }
     },

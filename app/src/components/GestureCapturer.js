@@ -11,7 +11,7 @@ function GestureCapturer(props) {
   const [webcamRunning, setWebcamRunning] = useState(false);
   let gestureRecognizer;
   const videoRef = useRef(null);
-  const canvasRef = useRef(null);
+  //const canvasRef = useRef(null);
   const enableWebcamButtonRef = useRef(null);
   const runningMode = "worker";
   let lastVideoTime = null;
@@ -25,7 +25,7 @@ function GestureCapturer(props) {
   
   useEffect(() => {
     const video = videoRef.current;
-    const canvas = canvasRef.current;
+    //const canvas = canvasRef.current;
     const enableWebcamButton = enableWebcamButtonRef.current;
     
     const createGestureRecognizer = async () => {
@@ -140,6 +140,7 @@ function GestureCapturer(props) {
 
   return (
     <>
+    
       <div className="outerContainer" style={{ display: introOneDisplay, position: "absolute", zIndex:10 }}>
         <div id="innerContainer">
           Loading...
@@ -175,10 +176,15 @@ function GestureCapturer(props) {
       */}
       <div style={{ position: "absolute", zIndex:10 }}>
         <video ref={videoRef}
-          style={{ position: "absolute", display: "none", left: "0px", top: "0px", width: "100%", height: "100%" }} autoPlay playsInline></video>
-        <canvas ref={canvasRef} className="output_canvas" id="output_canvas" 
-          style={{ position: "absolute", display: "none", left: "0px", top: "0px",  width: "100%", height: "100%" }}></canvas>
+          style={{ 
+            position: "absolute", 
+            display: "hidden", 
+            left: "0px", top: "0px", 
+            width: "100%", 
+            height: "100%" }} autoPlay playsInline></video>
+        
       </div>
+      
     </>
   );
 }

@@ -43,8 +43,9 @@ function GestureMenu(props) {
   let offset_x = 0;
   
   const handleOpenPalm = (e) => {
-    log('handleOpenPalm ' + isActive);
-    if (e.detail.handedness == 'Left') {
+    log('handleOpenPalm ' + isActive + " " + e.detail.handedness);
+    //if (e.detail.handedness == 'Left') {
+      setActiveCard(null);
       setIsActive(true);
       setIsInSelectionMode(false);
       setSelectionMade(false);
@@ -57,7 +58,7 @@ function GestureMenu(props) {
       props.unsubscribe("Hand_Coords", handleGestureXY);
       props.subscribe("Pointing_Up", handlePointingUp);
       props.subscribe("No_Gesture", handleNoGesture);
-    }
+    //}
   }
 
   const handlePointingUp = (e) => {
@@ -80,14 +81,17 @@ function GestureMenu(props) {
   const handleGestureXY = (e) => {
     new_x = window.innerWidth / 2 - (window.innerWidth * (e.detail.x - anchor_x)) * 3 - 150;
     x.set(new_x)
-    y.set(window.innerHeight / 3);
-    //log(new_x + " " + window.innerWidth / 2)
+    y.set(window.innerHeight / 2 - 80);
+
     if (new_x < (window.innerWidth / 2) - 210) { 
-      if (activeCard != 'left') setActiveCard('left')
+      //if (activeCard != 'left') 
+      setActiveCard('left')
     } else if (new_x > window.innerWidth / 2 + 210) {
-      if (activeCard != 'right') setActiveCard('right')
+      //if (activeCard != 'right') 
+      setActiveCard('right')
     } else { 
-      if (activeCard != 'center') setActiveCard('center')
+      //if (activeCard != 'center') 
+      setActiveCard('center')
     }
   }
 
@@ -96,6 +100,8 @@ function GestureMenu(props) {
       props.unsubscribe("Thumb_Up", handleThumbsUp);
       props.unsubscribe("No_Gesture", handleNoGesture);
       props.unsubscribe("Hand_Coords", handleGestureXY);
+      props.unsubscribe("Open_Palm", handleOpenPalm);
+      props.unsubscribe("Pointing_Up", handlePointingUp);
       setShowCoachTip(null)
       setIsInSelectionMode(true);
       setSelectionMade(true);
@@ -107,13 +113,14 @@ function GestureMenu(props) {
     // Revove event listeners that require an open dialog
     props.unsubscribe("Hand_Coords", handleGestureXY);
     props.unsubscribe("Thumb_Up", handleThumbsUp);
+    props.subscribe("Open_Palm", handleOpenPalm);
     setIsActive(false);
     setShowCoachTip(null);
     setIsInSelectionMode(false);
     setSelectionMade(false);
 
     // Reopen intro coach tip
-    setShowCoachTip("intro");
+    if (!showNotification) setShowCoachTip("intro");
   
     log('Closing menu ' + isActive);
   }
@@ -125,14 +132,13 @@ function GestureMenu(props) {
     setIsActive(false);
     setIsInSelectionMode(false);
     setSelectionMade(false);
+    setActiveCard(null);
     
     props.unsubscribe("Pointing_Up", handlePointingUp);
     props.unsubscribe("Hand_Coords", handleGestureXY);
     props.unsubscribe("Thumb_Up", handleThumbsUp);
     props.subscribe("Open_Palm", handleOpenPalm);
     props.subscribe("No_Gesture", handleNoGesture);
-
-    //setShowCoachTip("intro");
   }
 
   useEffect(() => {
@@ -159,7 +165,7 @@ function GestureMenu(props) {
   }, [selectionMade]);
 
   useEffect(() => {
-    log('isExiting ' + isExiting);
+    log('useEffect isExiting ' + isExiting); // This will log the updated value
   }, [isExiting]);
 
   return (
@@ -185,12 +191,12 @@ function GestureMenu(props) {
           />
           <CoachTip 
             image={"icon_point_up"} 
-            text={"HINT: Point your index finger up"}
+            text={"Point your index finger up"}
             showCoachTip={showCoachTip == "point_up"}
           />
            <CoachTip 
             image={"point_and_move"} 
-            text={"HINT: Move you finger left and right"}
+            text={"Move you finger left and right"}
             showCoachTip={showCoachTip == "point_up_and_move"}
           />
           <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop:"140px"}}>

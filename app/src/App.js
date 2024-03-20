@@ -43,7 +43,7 @@ function App() {
           introDisplay={introDisplay}
           setIntroDisplay={setIntroDisplay}
         />
-        <div className="header">
+        <div className="header" style={{position:"fixed", top:0, left:0}}>
           <div style={{flex:1}}></div>
           <div className="title">
             <div className="header-06">Gestures II</div>

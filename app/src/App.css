@@ -27,8 +27,27 @@
   background:none;
   display: flex; 
   justify-content: center;
-  font-family: "Roboto Mono", sans-serif;
-  font-size:12px;
+  font-family: "Source Sans Pro", sans-serif;
+  font-size:16px;
+  background-color: none;
+  overflow-y: hidden;
+}
+
+#innerContainer {
+  display:flex; 
+  background:none; 
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: none;
+}
+
+
+body {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 16px;
+  color: #444;
+  overflow-y: hidden;
 }
 
 #webcamButton {
@@ -45,18 +64,8 @@
   align-items: center;
   cursor: pointer;
   z-index: 10000;
-  font-family: "Source Sans Pro", sans-serif;
-  font-size: 12px;
   color:#fff;
   background-color: #333;
-}
-
-#innerContainer {
-  display:flex; 
-  background:none; 
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
 }
 
 #loadingContainer {
@@ -77,9 +86,6 @@
 
 .annotations {
   height:52px; 
-  font-family: 'Roboto Mono', monospace; 
-  font-size:12px;
-  color: #222
 }
 
 /* ------------------------------------------- */
@@ -100,7 +106,7 @@
 .header-03 {
   color:#222; 
   font-family:'Source Sans Pro', sans-serif; 
-  font-size: 12px;
+  font-size: 14px;
   font-weight:700;
   text-transform: uppercase;
   letter-spacing: 1.1px;
@@ -108,13 +114,13 @@
 .header-04 {
   color:#222; 
   font-family:'Source Sans Pro', sans-serif; 
-  font-size: 12px; 
+  font-size: 14px; 
   font-weight:600;
 }
 .header-05 {
   color:#222; 
   font-family:'Source Sans Pro', sans-serif; 
-  font-size: 12px; 
+  font-size: 14px; 
   font-weight:500;
   text-transform: uppercase;
   margin-right: 20px;
@@ -127,7 +133,7 @@
 .header-06 {
   color:#666; 
   font-family:'Source Sans Pro', sans-serif; 
-  font-size: 12px; 
+  font-size: 14px; 
   font-weight:500;
 }
 
@@ -138,7 +144,6 @@
 .menu-card {
   width: 300px;
   height: 300px;
-  font-family: 'Source Sans Pro', sans-serif;
   line-height: 1.6em;
   font-size: 20px;
   background: #fff;
@@ -157,12 +162,12 @@
 }
 
 .logs {
-  font-family: 'Roboto Mono', sans-serif;
+  font-family: 'Roboto Mono', monospace;
   font-size: 11px;
 }
 
 .logs .log {
-  font-family: 'Roboto Mono', sans-serif;
+  font-family: 'Roboto Mono', monospace;
   font-size: 11px;
   line-height: 1.2em;
   color: #222;

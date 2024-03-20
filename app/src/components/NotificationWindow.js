@@ -36,12 +36,12 @@ function NotificationWindow(props) {
     }}
     style={{
       position:"absolute",
-      top: "0px",
+      top: "40%",
       display: "flex",
       flexDirection: "column",
       justifyContent: "center",
-      height: "0px",
-      width: "240px",
+      minHeight: "0px",
+      minWidth: "240px",
       alignItems: "center",
       background: "#333",
       color: "#fff",

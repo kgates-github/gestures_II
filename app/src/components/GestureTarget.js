@@ -7,8 +7,8 @@ function GestureTarget(props) {
   const log = useContext(LogContext);
 
   const variantsConfirm = {
-    active: { opacity: 1, y: -24},
-    inactive: { opacity: 0, y: 0},
+    active: { opacity: 1, y: -10},
+    inactive: { opacity: 0, y: -10},
   }
 
   const circleVariants = {
@@ -56,7 +56,6 @@ function GestureTarget(props) {
           fill="transparent"
           strokeWidth="8"
           stroke="#19B300"
-          stroke-linejoin="round"
           variants={checkVariants}
           initial="inactive"
           animate={props.isSelected ? 'active' : 'inactive'}
