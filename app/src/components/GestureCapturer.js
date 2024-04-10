@@ -22,7 +22,7 @@ function GestureCapturer(props) {
   let frameCount = 0;
   const xs = [0, 0, 0];
 
-  
+
   useEffect(() => {
     const video = videoRef.current;
     //const canvas = canvasRef.current;
@@ -89,6 +89,8 @@ function GestureCapturer(props) {
           results = gestureRecognizer.recognizeForVideo(video, nowInMs);
         }
 
+        console.log('results', results);
+
         if (results.gestures.length > 0) {
           if (lastGesture != results.gestures[0][0].categoryName && results.gestures[0][0].categoryName != 'None') {
             gestureName = results.gestures[0][0].categoryName;
@@ -148,7 +150,18 @@ function GestureCapturer(props) {
       </div>
       <div className="outerContainer" style={{ display: introTwoDisplay, position: "absolute", zIndex:10 }}>
         <div id="innerContainer">
-          <div className="annotations">This prototype uses your webcam to recognize hand gestures.</div>
+          
+          <div className="annotations"
+            style={{
+              width:"450px", 
+              height:"100px", 
+              textAlign:"center",
+              lineHeight:"1.2em",
+            }}>
+            This prototype is an exploration of hands-free interation design.
+            It needs access to your webcam and mic.
+          </div>
+          
           <div ref={enableWebcamButtonRef}  id="webcamButton">
             <span className="">Enable Webcam</span>
           </div> 

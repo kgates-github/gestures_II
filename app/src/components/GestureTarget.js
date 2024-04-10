@@ -36,28 +36,29 @@ function GestureTarget(props) {
     >
       <svg width="82" height="82">
         <motion.path
-          d="M 43, 43 m -35, 0 a 35,35 0 1,0 70,0 a 35,35 0 1,0 -70,0"
+          d="M 43, 43 m -28.5, 0 a 28.5,28.5 0 1,0 57,0 a 28.5,28.5 0 1,0 -57,0"
           fill="transparent"
           strokeWidth="8"
           stroke="#ccc" 
         />  
         <motion.path
-          d="M 43, 43 m -35, 0 a 35,35 0 1,0 70,0 a 35,35 0 1,0 -70,0"
+          d="M 43, 43 m -28.5, 0 a 28.5,28.5 0 1,0 57,0 a 28.5,28.5 0 1,0 -57,0"
           fill="transparent"
-          strokeWidth="8"
-          stroke="#19B300"
+          strokeWidth="6"
+          stroke="#0FD446"
           variants={circleVariants}
           initial="inactive"
           animate={props.isSelected ? 'active' : 'inactive'}
           transition={{ duration: 0.5, ease: 'easeOut' }} 
         />
         <motion.path
-          d="M 23.5 46 L 39.1797 58.9199 L 63.6797 27.4199"
+          d="M15 29L25 38L40 19"
           fill="transparent"
-          strokeWidth="8"
-          stroke="#19B300"
+          strokeWidth="6"
+          stroke="#0FD446"
           variants={checkVariants}
           initial="inactive"
+          transform="translate(15, 15.5)"
           animate={props.isSelected ? 'active' : 'inactive'}
           transition={{ duration: 0.2, ease: 'easeOut', delay: 0.4 }} 
           onAnimationComplete={() => {
@@ -70,7 +71,7 @@ function GestureTarget(props) {
         src={process.env.PUBLIC_URL + '/svg/icon_thumb_up.svg'} 
         style={{
           position:"relative", top:"-65px", left:"4px",
-          width:'50px', height:'50px', marginTop:'4px', marginLeft:'2px'
+          width:'40px', height:'40px', marginTop:'8px', marginLeft:'2px'
         }}
         initial={{ opacity: 1 }}
         animate={props.isSelected ? { opacity: 0 } : { opacity: 1 }}

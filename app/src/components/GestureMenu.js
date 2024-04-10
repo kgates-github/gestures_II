@@ -10,13 +10,13 @@ import { motion, useMotionValue } from "framer-motion"
 
 function GestureMenu(props) {
   const log = useContext(LogContext);
-  const [isActive, setIsActive] = useState(false); // Menu is open/closed
-  const [activeCard, setActiveCard] = useState(null); // Which card is active
-  const [isInSelectionMode, setIsInSelectionMode] = useState(false); // Whether index finger is up
-  const [selectionMade, setSelectionMade] = useState(false); // Whether thumb is up
-  const [showNotification, setShowNotification] = useState(false); // Whether to show confirmation window
-  const [animal, setAnimal] = useState(null); // Which animal was selected
-  const [showCoachTip, setShowCoachTip] = useState(null); // Whether to show coach tip
+  const [isActive, setIsActive] = useState(false); 
+  const [activeCard, setActiveCard] = useState(null); 
+  const [isInSelectionMode, setIsInSelectionMode] = useState(false);
+  const [selectionMade, setSelectionMade] = useState(false); 
+  const [showNotification, setShowNotification] = useState(false); 
+  const [animal, setAnimal] = useState(null); 
+  const [showCoachTip, setShowCoachTip] = useState(null);
   const [isExiting, setIsExiting] = useState(false);  
 
   // Animation defs
@@ -202,9 +202,6 @@ function GestureMenu(props) {
           <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop:"140px"}}>
             <motion.div
               className="dialog"
-              //animate={isActive ? 'isActive' : 'isInactive'}
-              //variants={variantsMenu}
-              //initial={"isInactive"}
               style={{display: 'flex', flexDirection: 'row', alignItems: 'center', zIndex: 90}}
             >
               <Card 

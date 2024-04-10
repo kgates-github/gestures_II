@@ -142,15 +142,23 @@ body {
 }
 
 .menu-card {
-  width: 300px;
-  height: 300px;
-  line-height: 1.6em;
-  font-size: 20px;
+  width: 240px;
+  height: 240px;
+  line-height: 1.3em;
+  font-size: 16px;
   background: #fff;
-  border-radius: 30px;
-  padding: 28px;
+  border: 2px solid #ACACAC;
+  border-radius: 20px;
+  padding-top: 28px;
+  padding-bottom: 40px;
+  padding-left: 20px;
+  padding-right: 20px;
   box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.4);
   overflow-y: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .menu-card:last-child {

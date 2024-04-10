@@ -13,28 +13,28 @@ function Card(props) {
     active:    { 
       y: -40, 
       opacity: 1, 
-      border: "8px solid #0098fd", 
-      scale: 1.06,
+      border: "6px solid #0098fd", 
+      scale: 1,
       transition: { duration: 0.3, ease: 'easeOut' }
     },
     inactive: { 
       y: 0, 
       opacity: 1, 
       scale: 1,
-      border: "4px solid #999",
+      border: "3px solid #999",
       transition: { duration: 0.3, ease: 'easeOut' }
     },
     exitFast:{ 
       opacity: 0, 
-      scale: 0.7, 
-      border: "4px solid #999",
+      scale: 0, 
+      border: "3px solid #999",
       y: 0,
       transition: { duration: 0.3, ease: 'easeOut' }
     },
     exitSlow:{ 
       opacity: 0, 
-      scale: 0.7, 
-      border: "4px solid #0098fd",
+      scale: 0, 
+      border: "3px solid #0098fd",
       y: 0,
       transition: { duration: 0.3, ease: 'easeOut', delay: 0.7 }
     },
@@ -101,7 +101,7 @@ function Card(props) {
           }
         }}
       >
-        <div style={{fontSize:"16px", fontWeight:"700"}}>{props.title}</div>
+        <div style={{fontSize:"16px", fontWeight:"300"}}>{props.title}</div>
         {props.text}
       </motion.div>
       

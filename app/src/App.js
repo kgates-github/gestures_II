@@ -7,7 +7,6 @@ import React, { useState, useContext } from 'react';
 import { LogContext } from './components/LogContext';
 
 
-
 function App() {
   const [logEntries, setLogEntries] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
